@@ -319,28 +319,116 @@ def my_join():
     print(re)
 
 
+def my_list1():
+    list1 = []
+    for i in range(100, 10, -1):
+        if i % 4 == 0:
+            list1.append(i)
+    print(list1)
 
 
-
-str_to_list()
-
-
-
-
-
-
-
-
-
-
-
-
-
+def minganci():
+    list1 = ['hi', 'dog', 'is']
+    str = 'hi,i am lilei, it is my dog！！！'
+    for i in list1:
+        print(i)
+        if i in str:    # i为敏感词
+            x = str.rfind(i)   # 寻找敏感词索引
+            print(x, i)
+            list1 = list(str)
+            for j in range(x, x+len(i)):     # 遍历敏感词替换
+                list1[j] = '*'
+            str = ''.join(list1)
+    print(str)
 
 
+def minganci2():
+    list1 = ['hi', 'dog', 'is']
+    str = 'hi,i am lilei, it is my dog!!!'
+    for i in list1:
+        temp = ''
+        str = str.replace(i, "*"*len(i))
+    print(str)
 
 
+def list_xunhuan():
+    li = ["Taibai", 'alexC ', ' ABcdFC ', 'luHu ', "wuSir", ' Akikc']
+    li1 = []
+    for i in li:
+        i = i.strip()
+        if i.lower().startswith('a') and i.lower().endswith('c'):
+            li1.append(i)
+    print(li1)
+    print(li)
 
 
+def xunhuan_dayin():
+    li = [1, 2, 3, [2, 'we', 45], 3]
+    for i in range(len(li)):
+        if type(li[i]) == list:
+            for j in range(len(li[i])):
+                print(li[i][j])
+
+        else:print(li[i])
 
 
+def my_dict():
+    """
+    数据类型的分类（可变与不可变）：
+    可变不可哈希：list dict set
+    不可变可哈希：str bool int tuple
+    键值对，键必须为不可变数据类型，值可以为任意数据类型或对象
+    字典在3.5版本之前时无序的，3.6之后按初次建立字典的顺序排列，3.7之后是有序的
+    字典的缺点是以空间换时间，字典查询数据很快
+    :return:
+    字典的创建方式及增删查改
+    """
+    dict1 = dict((('ee', 4), ('dff', 2), ('po', 65), ('wew', 2)))    # 元组的拆包
+    dict2 = dict(a=1, b=4, c=7)
+    dict3 = dict({'a': 2, 'b': 9, 'c': [1, 2, 3, 'trtr']})
+    dict4 = {'a': 2, 'b': 9}
+    dict4['haha'] = 5     # 有则改无则加
+    dict4.setdefault('hahf', 555)  # 有则不动，无则加，默认加None
+    dict4.pop('a')     # 按照键删除键值对
+    dict4.pop('c', '没有此键')   # 没有此键返回后面信息
+    # dict4.clear()    # 内容清空
+    # del dict4['b']
+    d = dict3.get('y', '没有此键')     # 按键查值，没有返回后面的信息，默认None
+    # print(list(dict3.keys()))      # 获取字典所有的键，类型为dict_keys
+    # print(list(dict3.values()))    # 获取字典所有的值，类型为dict_value，可迭代，可转换数据类型
+    for key, value in dict3.items():
+        print('key=', key, 'value=', value)   # 元组的拆包
+
+
+def dict_demo():
+    dict1 = {
+        'xiaoming': {
+            'aaa': ['我', 'is', 'hi'],
+            'bbb': ['was', 'hello', 'pic']
+        },
+        'lilei': {
+            'zhang': ['li', 'lu', 'wang'],
+            'java': ['we', 'ella', 'piao']
+        }
+    }
+
+    dict1.setdefault('luhu', {"go": ['ll', 'kk']})
+    dict1['xiaoming'] = {
+            'aaa': ['我888', 'is', 'hi'],
+            'bbb': ['was', 'hello', 'pic'],
+            'ccc': [1, 2, 3]
+        }
+    print(dict1['xiaoming']['aaa'].insert(0, 'insert'))
+    print(dict1)
+
+
+def dict_demo2():
+    dict2 = {}
+    str = ' k:0|k1 :1|k2 :2|k3 :3|k4:4|k5:5|k6:6'
+    for i in str.split('|'):
+        key, value = i.split(':')
+        dict2[key.strip()] = int(value)
+    print(dict2)
+
+
+dict_demo2()
