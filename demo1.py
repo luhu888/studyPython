@@ -1,3 +1,5 @@
+import copy
+
 flag = True
 """
     无限循环加终止条件
@@ -431,4 +433,233 @@ def dict_demo2():
     print(dict2)
 
 
-dict_demo2()
+def dengyu_is_demo():
+    """
+    id相同值一定相同，值相同，id不一定相同
+    :return:
+    """
+    l1 = [1, 2, 3, 4]
+    l2 = [1, 2, 3, 4]
+    l3 = l1
+    print(l1 == l2)    # 比较变量的数值是否相同
+    print(l1 is l3)    # 比较变量的地址是否相同
+    print(id(l1))      # 获取变量的地址
+
+
+
+str1 = '1000'
+str2 = '1000'
+"""
+同一代码块缓存机制：同一代码块下，申明变量先检查内存中是否创建该数据
+优点：节省内存，提升性能
+适用变量：str bool int
+适用细则：几乎所用的str 所有的bool，所有的int
+"""
+# print(str is str1)
+# print(id(str), id(str1))
+
+
+"""
+不同代码块的缓存机制：不同代码块下，申明变量先检查内存中是否创建该数据，不过数据范围变小了
+适用变量：str bool int
+适用细则：一定规则的str 所有的bool，-5~256的int
+"""
+str1 = 257
+str2 = 257
+# print(str1 is str2)     # 在交互式命令行中执行，结果为false
+
+
+def my_set():
+    """
+    set 集合，集合是无序的，一个集合中不会出现重复的元素，集合中的元素不可变，可哈希
+    集合的增删改,交并差集，反交集，子集，超集
+    增：add, update 迭代着增加
+    删：remove 删除指定元素，pop 随机删除
+    改：变相改，先删后改
+    交集& 并集|
+    :return:
+    """
+    set1 = set({1, 2, 'aa', False, 'vv', '12'})
+    # print(set1)
+    set2 = {1, 4, 8, 'gg', 2}
+    set3 = {'1', '1', 12, 'ewe'}    # set的正确性校验，里面不可放可变数据类型
+    set4 = {1, 2}
+    # print(set3)
+    print(set1 & set2)   # 交集
+    print(set1 | set2)   # 并集
+    print(set1 - set2)   # 差集，set1中有set2中没有的
+    print(set1 ^ set2)   # 除了两个共有的其他元素
+    print(set4 < set1)   # 判断set4是不是set1的子集
+    print(set1 > set4)   # 判断set1是不是set4的超集
+
+
+def list_quchong():
+    """
+    通过集合的特性给列表去重
+    :return:
+    """
+    li = [1, 1, 2, 3, 3, 4, 4, 'aa', 'aa']
+    set1 = set(li)
+    li = list(set1)
+    print(li)
+
+
+def copy_demo():
+    """
+    浅拷贝：只拷贝外壳，不拷贝里面的东西，在内存中开辟新空间去存放copy的对象（列表，字典），里面所有的元素和copy的对象共用同一个
+    深拷贝：将可变的数据类型在内存中重新创建一份，不可变的数据类就沿用之前的
+    :return:
+    """
+    li = [1, 2, '33', 'adf', [1, 2, 'aa']]
+    li2 = li.copy()
+    li3 = copy.deepcopy(li)
+    li[4].append('oppo')
+    li[0] = 9
+    print(li)
+    print('浅拷贝', li2)
+    print('深拷贝', li3)
+    li[0] = 90
+
+
+def copy_demo2():
+    """
+    说明切片是浅拷贝，可变数据类型共用一个
+    :return:
+    """
+    li = [1, 2, 3, [1, 2, 'ee', 3]]
+    li2 = li[:]
+    li[-1].append('aa')
+    print(li)
+    print(li2)
+
+
+def gouwu_demo():
+    goods = [
+        {"name": "主机", "price": 1999},
+        {"name": "鼠标", "price": 30},
+        {"name": "键盘", "price": 20},
+        {"name": "显示器", "price": 300}
+    ]
+
+    while 1:
+        for i, j in enumerate(goods):
+            print('{}\t{}\t{}'.format(i + 1, j["name"], j["price"]))
+        input1 = input('请输入编号:')
+        if input1.isdecimal():
+            if 0 < int(input1) < len(goods)+1:
+                print(goods[int(input1)-1]["name"], goods[int(input1)-1]["price"])
+                break
+            else:
+                print("输入编号超出范围，请重新输入！！！")
+        elif input1.upper() == "Q":
+            print("退出程序！")
+            break
+        else:
+            print('输入有误,请重新输入')
+
+
+def mima_demo():
+    li = []
+    while 1:
+        name = input('请输入用户名>>>')
+        if name.lower() == 'n': break
+        password = input('请输入密码>>>')
+        dic1 = {"name": name, "password": password}
+        li.append(dic1)
+    print(li)
+
+
+def lianxi1():
+    # info = [1, 2, 3]
+    info = 'aa'
+    userinfo = [info, info, info]
+    # info[0] = 'dd'
+    info = 'vv'
+    print(userinfo)
+
+
+def lianxi2():
+    """
+    data创建在循环外，会出现重复的i，因为每次循环都将i的地址指向最新的i
+    :return:
+    """
+    # data = {}
+    data_list = []
+    for i in range(10):
+        data = {}
+        data['user'] = i
+        data_list.append(data)
+    print(data_list)
+
+
+def lianxi3():
+    for i in range(10):
+        if i % 2 == 1:
+            print(i*'*')
+
+
+def qiao7():
+    li = []
+    for i in range(1, 100):
+        if i % 7 == 0:
+            li.append('咣')
+
+        else:
+            li.append(i)
+    print(li)
+
+
+def str_kuochong():
+    """
+    str方法的扩充
+    capitalize   首字母大写其余变小写
+    swapcase     大小写翻转
+    center       居中对齐，总长度为int填充默认空格
+    find         根据元素找第一个索引,找不到返回-1
+    index        根据元素找第一个索引,找不到报错
+
+    :return:
+    """
+    str1 = 'heLLoLuhu'
+    print(str1.capitalize())
+    print(str1.swapcase())
+    print(str1.center(50, '*'))
+    print(str1.find('u'))
+
+
+def tuple_kuozhan():
+    """
+    tuple的扩展
+    count 计数某一元素出现的次数
+    index 根据元素返回第一个的位置，没有就报错
+    :return:
+    """
+    tu1 = (1, 1, 2, 3, 4, 4, 4, 6, 7)
+    print(tu1.count(2))
+    print(tu1.index(4))
+
+
+def list_kuozhan():
+    """
+    list的扩展
+    index
+    count
+    sort 默认从小到大排，字母按首字母asc码从小到大排,不返回值
+    reverse 将列表翻转过来
+    列表相加相乘  + *
+    :return:
+    """
+    li = [1, 2, 6, 7, 4, 9, 11]
+    li2 = [2, 4, 3, 1, 10, 9]
+    li.sort()
+    print(li)
+
+
+def list_delete():
+    li = [11, 22, 33, 44, 55, 66, 77, 88, 99]
+    del li[1::2]
+    print(li)
+
+
+
+list_delete()
