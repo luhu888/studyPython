@@ -1,4 +1,5 @@
 import copy
+import os
 
 flag = True
 """
@@ -617,7 +618,6 @@ def str_kuochong():
     center       居中对齐，总长度为int填充默认空格
     find         根据元素找第一个索引,找不到返回-1
     index        根据元素找第一个索引,找不到报错
-
     :return:
     """
     str1 = 'heLLoLuhu'
@@ -645,6 +645,7 @@ def list_kuozhan():
     index
     count
     sort 默认从小到大排，字母按首字母asc码从小到大排,不返回值
+    sort(reverse=True)  从大到小排
     reverse 将列表翻转过来
     列表相加相乘  + *
     :return:
@@ -657,7 +658,7 @@ def list_kuozhan():
 
 def list_delete():
     """
-    删除索引为奇数对应的值
+    删除索引为奇数对应的值,不要再列表循环的时候删除元素，否则会影响结果
     :return:
     """
     li = [11, 22, 33, 44, 55, 66, 77, 88, 99]
@@ -676,11 +677,196 @@ def list_delete():
 def dict_kuozhan():
     """
     dict 的扩展
-    update     有则改无则新增
-    fromkeys(keys,value)   将同一个值赋值给keys这个可迭代对象，缺点不同的键指向同一个对象，对象值改变，dict所有的值一起改变
-
+    update     有则改无则新增  update(key=value),update(dict)
+    dict.fromkeys(iterable,value)   创建一个新的字典，将同一个值赋值给keys这个可迭代对象，缺点不同的键指向同一个对象，对象值改变，dict所有的值一起改变
+    字典在循环的时候不可删除，否则会报错
     :return:
     """
+    dict1 = {'key': 1213, 'key1': 'ert', 'key2': 999, 'aa': 'lll', 'key4': '1212'}
+    for i in list(dict1.keys()):
+        if 'k' in i:
+            dict1.pop(i)
+    print(dict1)
 
 
-list_delete()
+def dict_update():
+    dict1 = {'a': 12}
+    dict2 = {'ee': 98, 'uu': 90}
+    dict1.update((('ww', 2), ('qq', 4)))
+    dict1.update(hobby='play')
+    dict1.update(dict2)
+    print(dict1.fromkeys(['e', 'v', 'l'], 'haha'))   # fromkeys会创建一个新的字典，操作完之后记得将新字典指给原来的变量
+    print(dict.fromkeys(['e', 'v', 'l'], 'haha'))    # 这种方式更易于理解
+    print(dict1)
+
+
+def dict_kuozhan2():
+    dict1 = {'key': 1213, 'key1': 'ert', 'key2': 999, 'aa': 'lll', 'key4': '1212'}
+    li = []
+    for i in dict1.keys():
+        li.append(i)
+    print(li)
+    for k in li:
+        if 'k' in k:
+            dict1.pop(k)
+    print(dict1)
+    # print(type(dict1.keys()))
+
+
+def my_bytes():
+    """
+    str 文字文本，  bytes 字节文本
+    数据在内存中全部是以Unicode编码的
+    但是当数据用于网络传输或存到硬盘中，必须是以非Unicode编码（utf-8，gbk）
+    数据类型：bytes   与字符串很像，在内存中非Unicode编码
+    bytes数据类型可以直接用于网络的传输
+    :return:
+    """
+    by = b'ff'
+    str = '你好'   # str在内存中是Unicode编码
+    by1 = b'\xc4\xe3\xba\xc3'
+    by2 = by1.decode('gbk')
+    by3 = by2.encode('utf-8')   # 用啥编码就用啥解码,变成Unicode的
+    by33 = by.decode('utf-8')
+    print(str.encode('gbk'))
+    print(by2)
+    print(by3)
+    print(by33)
+
+
+def dict_list_lianxi():
+    v2 = {}
+    v1 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    for item in v1:
+        if item < 6:
+            print(item)
+            continue
+        if 'k1' in v2:
+            v2['k1'].append(item)
+        else:
+            v2['k1'] = [item, ]
+    print(v2)
+
+
+def copy_lianxi():
+    s1 = 'fdfdf'
+    s4 = 'fdfdf'
+    s2 = copy.copy(s1)
+    s3 = copy.deepcopy(s1)
+    l1 = [1, 2, 3, [1, 4], 6]
+    l4 = [1, 2, 3, 4, 6]
+    l2 = copy.copy(l1)
+    l3 = copy.deepcopy(l1)
+    l1[3][1] = 'e'
+    l1[1] = 'e'
+    print(l2)
+    print(s1 is s4)
+    print(s1 is s3)
+    print(l1[3] is l2[3])
+    print(l1 is l2)
+    print(l1 is l3)
+
+
+def copy_lianxi2():
+    v1 = [1, 2, 3, {'name': 'jane', 'number': [7, 77, 88]}, 4, 5]
+    v2 = copy.copy(v1)
+    # print(v1[3] is v2[3])
+    print(v1[3]['number']is v2[3]['number'])
+
+
+def open_file():
+    """
+    file_handler约定俗成名称叫文件句柄，对文件的操作都要通过文件句柄
+    encoding 可以不写，默认操作系统的默认编码
+    mode 默认只读模式打开
+    r 只读文本
+    r+ 先读光标到结尾并追加写
+    rb 非文本      r+b
+    w 写,没有该文件会自动创建文件
+    wb 非文本写
+    w+ 写读   w+b
+    windows: gbk
+    linux mac: utf-8
+    flush   强制刷新，保存
+    :return:
+    """
+    # file_handler = open('D:\Downloads\\test.txt', encoding='utf-8', mode='r')
+    file_handler = open('/Users/hulu/Desktop/test/test.txt', mode='r+')
+    file_handler.read()
+    file_handler.write('luhu,xaioming，零零落落')
+    file_handler.flush()
+    print(file_handler.read())
+    # file_handler = open('/Users/hulu/Desktop/test/test2.txt', mode='w')
+
+    # file_handler2 = open('D:\Downloads\\test1.txt', encoding='gbk')
+    # content = file_handler.read()
+    # content = file_handler.read(5)   # 读取前5个字符
+    # content = file_handler.readline(2)   # 读取第一行的前2个字符
+    # content = file_handler.readlines()   # 读取多行，返回的是每行的列表
+    # print(content)
+    # 但这几种读取文件方式不好，一次加载所有数据到内存，数据多的话会撑爆内存
+    # for line in file_handler:   # 这种读取方式最合理，每次只加载一行到内存，用一次丢一次
+    #     print(line)
+
+    # file_handler.write('luhu,hahah')
+    file_handler.close()    # 关闭文件，否则一直打开占用内存
+
+
+def tell_file():
+    file_handler = open('/Users/hulu/Desktop/test/test3.txt', encoding='utf-8', mode='r')
+    file_handler.read()
+    print(file_handler.tell())    # 先读光标定位到最后，告诉这个文本有多少个字节
+    file_handler.close()
+
+
+def seek_file():
+    file_handler = open('/Users/hulu/Desktop/test/test3.txt')
+    print(file_handler.seek(1))  # 先读光标定位到指定位置，然后读取的是光标之后的内容
+    print(file_handler.read())
+    file_handler.close()
+
+
+def open_file2():
+    """
+    文件的另一种打开方式：
+    优点 不需要手动关闭文件，可以同时打开多个文件
+    :return:
+    """
+    with open('/Users/hulu/Desktop/test/test3.txt', encoding='utf-8') as f1,\
+            open('/Users/hulu/Desktop/test/test2.txt')as f2:
+        print(f1.read())
+        print(f2.read())
+
+
+def file_demo():
+    with open('test.txt') as f1, open('test.bak', mode='w') as f2:
+        for line in f1:
+            new_content = line.replace('luhu', 'LUHU')
+            f2.write(new_content)
+        # content = f1.read()     # 使用read不好，数据多会爆内存
+        # new_content = content.replace('luhu', 'LUHU')
+        # f2.write(new_content)
+        os.remove('test.txt')
+        os.rename('test.bak', 'test.txt')
+
+
+def shuixianhua():
+    while 1:
+        str1 = input('请输入一个数字：')
+        if str1.isdecimal():
+            # tem = str(str1)
+            print(len(str1))
+            res = 0
+            for i in str1:
+                res += int(i)**3
+                print(res)
+            if res == int(str1):
+                print('是水仙花数')
+                break
+            else:
+                print('不是水仙花数')
+
+        else:
+            print('输入的不是数字')
+
+shuixianhua()
