@@ -656,10 +656,31 @@ def list_kuozhan():
 
 
 def list_delete():
+    """
+    删除索引为奇数对应的值
+    :return:
+    """
     li = [11, 22, 33, 44, 55, 66, 77, 88, 99]
-    del li[1::2]
-    print(li)
+    # del li[1::2]
+    # for i in range(len(li)-1, -1, -1):    # 倒叙删除，删除之后不会影响前面的索引
+    #     if i % 2 ==1:
+    #         li.pop(i)
+    li2 = []
+    for i in range(len(li)):
+        if i % 2 == 0:
+            print(li[i])
+            li2.append(li[i])
+    print(li2)
 
+
+def dict_kuozhan():
+    """
+    dict 的扩展
+    update     有则改无则新增
+    fromkeys(keys,value)   将同一个值赋值给keys这个可迭代对象，缺点不同的键指向同一个对象，对象值改变，dict所有的值一起改变
+
+    :return:
+    """
 
 
 list_delete()
