@@ -677,7 +677,8 @@ def list_delete():
 def dict_kuozhan():
     """
     dict 的扩展
-    update     有则改无则新增  update(key=value),update(dict)
+    update()     有则改无则新增  update(key=value),update(dict)
+    get(key,default)  获取键对应的值，没有就创建该键并将default的值赋给该键
     dict.fromkeys(iterable,value)   创建一个新的字典，将同一个值赋值给keys这个可迭代对象，缺点不同的键指向同一个对象，对象值改变，dict所有的值一起改变
     字典在循环的时候不可删除，否则会报错
     :return:
@@ -869,4 +870,34 @@ def shuixianhua():
         else:
             print('输入的不是数字')
 
-shuixianhua()
+
+def chepai_dic_list():
+    cars = ['鲁A34545', '沪B43445', '黑C32333', '沪A2323323', '鲁A3423434', '沪N343543434', '京A23224', '沪A1243242', '皖M434e3423']
+    locals = {'鲁': '山东', '皖': '安徽', '沪': '上海', '黑': '黑龙江', '京': '北京', '湘': '湖南'}
+    # car_num = {}
+    # for local in locals.keys():
+    #     count = 0
+    #     for car in cars:
+    #         if local in car:
+    #             count += 1
+    #     car_num[local] = count
+    # car_local = {}
+    # for key in car_num.keys():
+    #     # print(key)
+    #     car_local[locals[key]] = car_num[key]
+    # print(car_local)
+    # dict1 = {}
+    # for car in cars:
+    #     if locals[car[0]] not in dict1:
+    #         dict1[locals[car[0]]] = 1
+    #     else:
+    #         dict1[locals[car[0]]] += 1
+    # print(dict1)
+    dict2 = {}
+    for car in cars:
+        dict2[locals[car[0]]] = dict2.get(locals[car[0]], 0) + 1  # 将值赋值给键，没有就赋值为0
+    print(dict2)
+
+
+
+chepai_dic_list()
