@@ -1,0 +1,4 @@
+apple 10 3
+tesla 100000 1
+mac 3000 2    LUHU
+lenovo 2000 1  LUHU

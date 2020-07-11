@@ -899,5 +899,187 @@ def chepai_dic_list():
     print(dict2)
 
 
+def file_dict():
+    li1 = []
+    li3 = ['name', 'price', 'amount']
+    with open('test.txt') as f1:
+        for line in f1:
+            li2 = line.strip().split(' ')
+            dict1 = {}
+            for i in range(len(li3)):
+                dict1[li3[i]] = li2[i]
+            li1.append(dict1)
+        f1.close()
+    print(li1)
 
-chepai_dic_list()
+
+def file_dict1():
+    with open('test.txt') as f1:
+        li1 = []
+        for line in f1:
+            dict1 = {}
+            dict1['name'], dict1['price'], dict1['amount'] = line.strip().split(' ')
+            li1.append(dict1)
+        f1.close()
+    print(li1)
+
+
+def my_hanshu():
+    """
+    函数返回多个值时，会被处理成元组tuple返回
+    :return:
+    """
+    print('test')
+    return 'kk', [1, 2, 3], 3
+
+
+def canshu(a, b):
+    """
+    形参，实参
+    实参：
+    1. 位置参数，从左到右一一对应
+    2. 关键字参数，调用方法时使用形参，传错顺序也没关系   canshu(a=1, b=1)
+    3. 混合参数，关键字参数一定要在位置参数后面，否则会报错
+    4. 默认参数，在方法名中指定默认值，默认参数在声明函数时必须放在形参之后，修改时必须使用default_key=key这种形式
+    形参：
+    1. 位置参数，从左到右一一对应
+    2. 默认参数，可以不传使用默认值，如果修改必须使用default_key=key这种形式,且放在位置参数之后
+    :return:
+    """
+    c = (a if a > b else b)     # 三元运算符对if else的简写,括号不用写，方便阅读理解
+    print(c)
+
+
+def canshu2(age, sex, hight, weight):
+    """
+    canshu2(21, '女',hight=172, weight=55)    混合参数，关键字参数一定要在位置参数后面，否则会报错
+    :param age:
+    :param sex:
+    :param hight:
+    :param weight:
+    :return:
+    """
+    return '筛选结果：年龄%s，性别%s，身高%s，体重%s' % (age, sex, hight, weight)
+
+
+def canshu3(l):
+    c = l[:2] if len(l) > 2 else l
+    return c
+
+
+def canshu4(age, hight, weight, sex='男'):
+    return '筛选结果：年龄%s，性别%s，身高%s，体重%s' % (age, sex, hight, weight)
+
+
+def canshu5(*args):
+    """
+    形参：
+    万能参数 *args,约定俗成叫args
+    * 代表聚合，它将所有位置参数聚合成一个元组赋值给args
+    万能参数 **kwargs，它将所有的关键字参数聚合成一个字典赋值给kwargs
+    :param args:
+    :return:
+    """
+    print('请你吃， %s %s %s' % args)
+
+
+def wannengcanshu(*args):
+    count = 0
+    for i in args:
+        count = count + i
+    print(count)
+
+
+def wannengcanshu2(name, age, *args, sex='male'):
+    """
+    当函数中出现位置参数，默认参数，万能参数（万能形参）时，将默认参数指定在最后，通过关键字参数调用传参
+    :param name:
+    :param age:
+    :param args:
+    :param sex:
+    :return:
+    """
+    print(args)
+    print(sex)
+    # wannengcanshu2(1, 3, 6, 9, 11, sex='nv')
+
+
+def wannengcanshu3(name, age, *args, c, sex='nan', **kwargs):
+    """
+    当函数中出现位置参数，万能形参，万能关键字参数，默认参数时，默认参数放在万能形参和万能关键字参数之间，万能关键字参数放最后
+    放在万能形参和万能关键字参数之间的位置参数叫仅限关键字参数 c 必须通过关键字参数调用，必传
+    默认参数和仅限关键字参数在调用时位置可以随便放，不会被万能关键字参数聚合到字典里
+    :param name:
+    :param age:
+    :param args:
+    :param sex:
+    :param kwargs:
+    :return:
+    """
+    print(sex)
+    print(c)
+    print(args, kwargs)
+    # wannengcanshu3(1, 3, 6, 9, 11, sex1='nv', c='a', dic1=1, sex='9', dic2=2, dic3=3)
+
+
+def wannengcanshu4(*args, **kwargs):
+    """
+    * 或**相当于打散
+    :param args:
+    :return:
+    """
+    print(args, kwargs)
+
+
+input = '路虎'   # hanshu5的全局变量
+count = 0       # hanshu5的全局变量
+
+
+def hanshu5():
+    """
+    取值顺序，就近原则，局部方法就从局部使用，然后取全局的，最后去内置的找
+    LEGB原则：local eclose(父级) global buildin
+    作用域：
+    全局作用域：内置名称命名空间，全局名称命名空间
+    局部作用域：局部名称命名空间
+    局部作用域可以引用全局作用域的变量，不可以改变全局作用域的变量
+    :return:
+    """
+    input = 'luhu'  # eclose 父级的局部变量
+
+    def func():
+        print(input)
+    # count += 1    # 当python解释器读取到局部作用域时，发现你对一个变量进行修改，
+                    # 解释器会认为你已经创建了一个局部变量，它就从局部找这个局部变量，就报错了
+    func()
+    print(input)
+
+
+# print(input)    # hanshu5的全局变量无法获取局部变量input的值
+
+# wannengcanshu4(*[1, 2, 3], *[4, 5, 6])   # 相当于[1, 2, 3, 4, 5, 6]
+# wannengcanshu4(**{'name': 'luhu'})
+# wannengcanshu4({'name': 'luhu'}, {'age': '23'})
+# wannengcanshu4(**{'name': 'luhu'}, **{'age': '23'})
+hanshu5()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
