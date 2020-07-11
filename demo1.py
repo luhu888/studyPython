@@ -938,9 +938,9 @@ def canshu(a, b):
     形参，实参
     实参：
     1. 位置参数，从左到右一一对应
-    2. 关键字参数，调用方法时使用形参，传错顺序也没关系   canshu(a=1, b=1)
+    2. 关键字参数，调用方法时使用形参，传错顺序也没关系   canshu(a=1, b=1),但是一定要放在位置参数之后
     3. 混合参数，关键字参数一定要在位置参数后面，否则会报错
-    4. 默认参数，在方法名中指定默认值，默认参数在声明函数时必须放在形参之后，修改时必须使用default_key=key这种形式
+    4. 默认参数，在方法名中指定默认值，默认参数可以不传，也可以按位置参数使用，使用关键字参数时，一定要放在位置参数之后
     形参：
     1. 位置参数，从左到右一一对应
     2. 默认参数，可以不传使用默认值，如果修改必须使用default_key=key这种形式,且放在位置参数之后
@@ -1028,7 +1028,9 @@ def wannengcanshu4(*args, **kwargs):
     :param args:
     :return:
     """
-    print(args, kwargs)
+    print(args)
+    print(kwargs)
+# wannengcanshu4({1, 3, 2}, [1, 2],**{'k1':'ff'})
 
 
 input = '路虎'   # hanshu5的全局变量
@@ -1040,6 +1042,9 @@ def hanshu5():
     取值顺序，就近原则，局部方法就从局部使用，然后取全局的，最后去内置的找
     LEGB原则：local eclose(父级) global buildin
     作用域：
+    内置名称命空间：存放的是内置函数
+    全局名称空间：py文件，存放的是py文件（除去函数，类内部的）的变量，函数名与函数在内存中地址的关系
+    局部名称空间：存放的函数内部的变量与值的对应关系
     全局作用域：内置名称命名空间，全局名称命名空间
     局部作用域：局部名称命名空间
     局部作用域可以引用全局作用域的变量，不可以改变全局作用域的变量
@@ -1061,18 +1066,152 @@ def hanshu5():
 # wannengcanshu4(**{'name': 'luhu'})
 # wannengcanshu4({'name': 'luhu'}, {'age': '23'})
 # wannengcanshu4(**{'name': 'luhu'}, **{'age': '23'})
-hanshu5()
 
 
+def zuoyongyu():
+    name = 'luhu'
+    age = 12
+    print(globals())      # 返回的是全局作用域的所有内容地址组成的字典
+    print(locals())       # 返回的是局部作用域的所有内容地址组成的字典
 
 
+# a = 10
+# b = 20
 
 
+# def test3(a, b):
+#     print(a, b)
+#
+#
+# c = test3(b, a)
+# print(c)
+
+# a = 10
+# b = 20
+#
+#
+# def test4(a, b):
+#     a = 3
+#     b = 5
+#     print(a, b)
+#
+#
+# c = test4(b, a)
+# print(c)
 
 
+def morencanshu(a, list=[]):
+    """
+    默认参数的坑，当默认参数指向的是可变参数类型时，那么无论你调多少次这个默认参数，它的地址都指向同一个
+    当调用完函数后，函数的在内存中被清空，但可变参数不被清空，且地址不变
+    :param a:
+    :param list:
+    :return:
+    """
+    list.append(a)
+    return list
 
 
+# print(morencanshu('ll'))    #['ll',]
+# print(morencanshu('123', []))     # ['123',]
+# print(morencanshu('hh'))    #   ['ll', ''hh']
 
+# ret1 = morencanshu('ll')
+# ret2 = morencanshu('123', [])
+# ret3 = morencanshu('hh')    # 执行完再打印ret1,ret3指向的是同一个列表
+# print(ret1)   # ['ll', ''hh']
+# print(ret2)   # ['123',]
+# print(ret3)   # ['ll', ''hh']
+
+
+# a = 2
+# def jububianliang_keng():
+#     """
+#     局部变量的坑，会报错，在引用前未定义局部变量
+#     :return:
+#     """
+#     print(a)
+#     a = 4
+
+# name = 'fff'
+# def jubu_quanju():
+#     """
+#     将局部变量声明为全局变量，只有在该函数被调用时，全局变量才生效
+#     :return:
+#     """
+#     global name
+#     name = 'luhu'
+#     print(name)
+#
+# # print(name)   # 会报错
+# jubu_quanju()
+# print(name)   # 不会报错，调用函数后，全局变量生效，就近原则打印luhu
+
+
+# count = 1
+# def quanju_yinyong():
+#     """
+#     global应用，修改全局变量
+#     :return:
+#     """
+#     global count
+#     count += 1
+# print(count)
+# quanju_yinyong()
+# print(count)
+
+
+def my_nonlocal():
+    """
+    nonlocal
+    1. 不能操作全局变量，
+    2. 局部作用域：用于操作内层函数对外层函数中局部变量的修改（高阶函数）
+    :return:
+    """
+    count = 1
+
+    def inner():
+        nonlocal count
+        count += 1
+        print('inner', count)
+    print('outer', count)   # 还没调用内层函数
+    inner()
+    print('outer_after', count)
+
+
+def func():
+    """
+    函数名其实也是一个变量
+    函数名可以作为容器类数据类型的元素
+    函数名可以作为函数的参数
+    :return:
+    """
+    print('in func')
+
+
+def func1():
+    print('in func1')
+
+
+def func3(x):
+    x()
+    print('in func3')
+
+
+def func4(x):
+    print('in func4')
+    return x
+
+# func1 = func
+# func1()   # 会打印in func而不是func1
+# ff  = [func, func1]    # 函数名可以作为容器类数据类型的元素
+# for i in ff:
+#     i()
+# func3(func)   # 函数名可以作为函数的参数
+# f = func4(func)    # 结果就是return了func，f=func
+# f()
+
+# my_nonlocal()
 
 
 
