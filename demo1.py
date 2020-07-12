@@ -385,6 +385,11 @@ def my_dict():
     字典的缺点是以空间换时间，字典查询数据很快
     :return:
     字典的创建方式及增删查改
+    dict1 = dict([(1,'ww'),(2,'ee')])
+    dict1 = dict(key1=1,key2=2)
+    dict1 = dict.fromkeys(iterable,value)
+    dict1 = dict1.update()
+    字典推导式
     """
     dict1 = dict((('ee', 4), ('dff', 2), ('po', 65), ('wew', 2)))    # 元组的拆包
     dict2 = dict(a=1, b=4, c=7)
@@ -1118,10 +1123,10 @@ def morencanshu(a, list=[]):
 
 # ret1 = morencanshu('ll')
 # ret2 = morencanshu('123', [])
-# ret3 = morencanshu('hh')    # 执行完再打印ret1,ret3指向的是同一个列表
-# print(ret1)   # ['ll', ''hh']
+# ret3 = morencanshu('hh')    # 执行完再打印ret1,ret3指向的是同一个列表,通过id函数可以看出两个指向的是同一个地址
+# print(ret1, id(ret1))   # ['ll', ''hh']
 # print(ret2)   # ['123',]
-# print(ret3)   # ['ll', ''hh']
+# print(ret3, id(ret3))   # ['ll', ''hh']
 
 
 # a = 2
@@ -1390,33 +1395,154 @@ def shengchengqi():
 def neizhihanshu():
     """
     内置函数
-    eval 剥去字符串的外衣，运算里面的代码,会有中毒的风险，在网络传输中会被黑客截取替换成病毒，执行eval会中毒
-    exec 与eval相似，代码流，执行代码
-    hash 不可变数据类型才有此方法，获取该值的哈希值
-    help 获取该函数的帮助用法
-    callable 判断一个函数是否可被调用
-
+    eval        剥去字符串的外衣，运算里面的代码,会有中毒的风险，在网络传输中会被黑客截取替换成病毒，执行eval会中毒
+    exec        与eval相似，代码流，执行代码
+    hash        不可变数据类型才有此方法，获取该值的哈希值
+    help        获取该函数的帮助用法
+    callable    判断一个函数是否可被调用
+    int         将字符串转化成整数，将小数转化成整数(不是四舍五入，直接去除小数)，将二进制转化成10进制
+    complex(x,j) 将传入的值转化成复数
+    float       将数值转化成小数
+    bin         将十进制转化成二进制
+    oct         将十进制转化成八进制
+    hex         将十进制转化成十六进制
+    divmod      计算除数与被除数的结果，返回一个包含商和余数的元组
+    round       保留浮点数的小数位数，默认保留整数
+    pow         求x**y次幂（三个参数为x**y的结果对z取余）
+    bytes       用于不同编码之间的转化
+    ord         输入字符找该字符编码的位置
+    chr         输入位置数字找出其对应的字符
+    repr        返回一个对象的string形式
+    all         判断一个可迭代对象里面全都是真，返回true
+    any         判断一个可迭代对象里面又一个是真，就返回true
+    abs         返回绝对值
+    sum         求和
+    reversed    将一个序列翻转,转化成一个迭代器
+    zip         拉链方法，两边同步，以最短的为准, 返回一个可迭代对象，以元组存放数据
+    min(ll,key) 最小值,凡是可以加key的，他会自动将可迭代对象中的每个元素按照顺序传入key对应的函数中,
+                如果传入的是字典，默认比较键的大小，返回该键值
+    max         最大值
+    sorted      排序，不是对原列表排序，生成一个新列表，也可以加key,默认从低到高排，reverse=true，是高到低排
+    filter      类似列表推导式的筛选模式，返回的是一个迭代器
+    map         类似于列表推导式的循环模式，返回的是一个迭代器
     :return:
     """
     str1 = '1+3'
     # print(eval(str1))
-    str2 = """
+    str2 = '''
 for i in range(10):
-    print(i)
-    
-    """
+    print(i)'''
     str3 = 'wer'
-    print(hash(str3))
+    # print(hash(str3))
     # exec(str2)
+    str_to_int = '12'
+    xiaoshu_to_int = 12.99
+    erjinzhi_to_in = '0100'
+    print(int(str_to_int))
+    print(int(xiaoshu_to_int))
+    print(int(erjinzhi_to_in, base=2))
+    print(float(3.3334))
+    print(round(3.2222, 2))
+    print(divmod(10, 3))
+    print(pow(2, 3, 3))
+    str1 = '你好'
+    es = str1.encode('utf-8')
+    print(es)
+    ds = es.decode('utf-8')
+    print(ds)
+    bes = bytes(str1, encoding='utf-8')
+    bes2 = bytes(str1, encoding='gbk')
+    print(bes)
+    print(bes2)
+    print(ord('a'))    # 如果是asc码中的就返回asc码对应的位置，超出就用unicode的位置
+    print(ord('中'))
+    print(chr(97))
+    print(repr(str1))
+    print('我叫%s' % str1)
+    print('我叫%r' % str1)
+    str2 = [1, 2, 0, 'e']
+    print(all(str2))
+    print(any(str2))
+    iter = reversed(str2)
+    print(next(iter))
+    tup1 = (1, 3, 5)
+    obj = zip(str2, tup1)
+    for i in obj:
+        print(i)
+
+
+def abss(a):
+    return abs(a)   # 模拟自己创建的绝对值函数
+"""
+凡是可以加key的，他会自动将可迭代对象中的每个元素按照顺序传入key对应的函数中
+"""
+ll = [1, 2, 6, 77, 8, 99, -8, 77]
+# print(min(ll, key=abss))   # 返回绝对值最小的数
+print(list(filter(lambda i: i > 3, ll)))  # 返回的是迭代器
+print(list(map(lambda i: i**2, ll)))
+dict3 = {'a': 2, 'b': 4, 'c': 1}
+
+
+def my_min(a):     # 返回值最小的对应的键
+    return dict3[a]
+# print(min(dict3,key=my_min))   # 将dict3的每个元素传给my_min，比较my_min返回值中最小的元素
+# print(min(dict3, key=lambda i: dict3[i]))   # 或者简写成匿名函数
+li2 = [('aa', 3), ('bb', 5), ('cc', 1), ('dd', 9), ('ee', 2)]
+print(min(li2, key=lambda i: i[1]))
+print(sorted(li2, key=lambda i: i[1], reverse=True))
+
+
+def test5():
+    M = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+    li = [key for i in M for key in i if key == i[2]]
+    li2 = [[i-2, i-1, i] for i in range(3, 10, 3)]
+    li3 = [(i-1, i) for i in range(1, 7)]
+    li4 = ['alex', 'luhu', 'haha']
+    li5 = [li4[i]+str(i) for i in range(len(li4))]
+    dict1 = {'name': 'luhu',
+             'values': [{"timestamp": 1517996427.94, "value": 100},
+                        {"timestamp": 1517996327.94, "value": 101},
+                        {"timestamp": 1517993337.94, "value": 111}]}
+    li6 = [[k["timestamp"], k["value"]] for k in dict1['values']]
+    color = ['black', 'white']
+    size = ['s', 'm', 'l']
+    li7 = [(i, j) for i in color for j in size]
+    li8 = (i for i in range(5))
+    print(li8)   # 不使用next不会执行，只会打印地址
+    return li8
+# g = test5()
+# print(next(g))
+# print(next(g))
+
+
+def chain(*args):
+    for it in args:
+        # for i in it:
+        #     yield i
+        yield from it   # 可以用yield from优化一层循环，提高效率
+# g = chain('abc', (0, 1, 2))
+# print(next(g))
+# print(next(g))
+
+
+def lambda_demo(a, b):
+    """
+    匿名函数，一句话函数，不用声明函数名，冒号前为形参，后为返回值
+    :param a:
+    :param b:
+    :return:
+    """
+    # return a+b
+    my_lambda = lambda a, b: a+b   # 构建匿名函数
+    print(my_lambda(1, 2))
+    my_lambda2 = lambda i: (i[0], i[2])    # 接受可切片的数据，返回索引为0和2的值
+    print(my_lambda2([1, 2, 3, 4]))
+    my_lambda3 = lambda i,j: i if i>j else j  # 返回两个数中较大的数
+    print(my_lambda3(9, 6))
 
 
 
-
-neizhihanshu()
-
-
-
-
+# neizhihanshu()
 
 
 
