@@ -1211,9 +1211,208 @@ def func4(x):
 # f = func4(func)    # 结果就是return了func，f=func
 # f()
 
-# my_nonlocal()
+
+def geshihua():
+    """
+    新特性，格式化输出
+    相对于之前的format，%s 结构更简化，可以结合表达式，函数使用，效率更高
+    f'{}'括号里可以放字符串，字典，列表,表达式,函数
+    :return:
+    """
+    name = 'luhu'
+    age = 23
+    dict1 = {"name": "路虎", "age": 22}
+    li1 = ['陆虎', 23]
+    msg = f'我叫{name}, 今年{age}岁'
+    msg1 = f'我叫{dict1["name"]}，今年{dict1["age"]}岁'
+    msg2 = f'我叫{li1[0].upper()}，今年{li1[1]}岁'
+    print(msg)
+    print(msg1)
+    print(msg2)
 
 
+def my_iterable():
+    """
+    可迭代的：更新迭代，可以重复循环的一个过程，更新迭代每次都有新的内容，可以循环更新的实实在在的一个值
+            内部含有__iter__方法的对象就是可迭代对象
+    可迭代的对象常见： str,list,tuple,set,dict,range，文件句柄
+    可迭代对象的优点：储存的数据直接显示，直观，拥有的方法多，操作方便
+             缺点：占用内存，不能直接通过for循环直接取值（索引，key），要通过迭代器，（list是通过for循环加自有操作方法取值）
+    dir()获取这个对象的方法，返回一个列表
+    :return:
+    """
+    li1 = [1, 2, 3]
+    print(dir(li1))
+
+
+def my_iterator():
+    """
+    迭代器，可更新迭代的工具，内部含有__iter__和__next__方法的就是迭代器
+    文件句柄就是迭代器
+    使用iter和next方法将可迭代对象转化成迭代器
+    优点:节约内存；惰性机制，next一次取一个值，绝不多取
+    缺点；速度慢；查看数据不直观；取值不走回头路，只能一直向下走
+    :return:
+    """
+    str = 'dfsaf242342fsafdsa'
+    obj = iter(str)    # 或使用obj.__iter__()'
+    print(next(obj))   # 或使用print(obj.__next__())
+    print(next(obj))
+
+
+def my_iterator2():
+    """
+    用while实现for循环
+    :return:
+    """
+    l2 = [1, 2, 3, 5, 6, 7, 8, 9]
+    l3 = iter(l2)
+    while 1:
+        try:
+            print(l3.__next__())
+        except StopIteration:
+            break
+
+
+def func11():
+    print('in func11')
+def func22(x):
+    print('in func22')
+    return x
+def func33(y):
+    print('in func33')
+    return y
+# ret = func22(func11)    # 调用func22方法打印in func22，返回'func11'
+# ret()                   # func11（），打印in func11
+# ret2 = func33(func22)    # 调用func33方法打印in func33，返回'func22'
+# ret3 = ret2(func11)      # func22(func11)，打印in func22，返回'func11'
+# ret3()                   # 打印in func11
+
+
+def test3():
+    for i in range(10):
+        pass
+    print(i)
+
+ll = []
+def test4(args):
+    ll.append(args)
+    return ll  # 将全局变量的值修改了
+# print(test4(1))
+# print(test4(2))
+# print(test4(3))
+
+
+def cal(str):
+    count = 1
+    # for i in range(1, str+1):
+    for i in range(str, 0, -1):
+        count = i*count
+    print(count)
+
+
+def chenfa():
+    for i in range(1, 10):
+        for j in range(1, i+1):
+            print(str(j)+'*'+str(i)+'=' + str(i * j), end=' ')
+        print('\n')
+
+
+def my_yield():
+    """
+    生成器，本质就是迭代器，区别在于，生成器是自己用python代码构建的数据结构，迭代器是python提供的，或者转化得来的
+    获取生成器的方法：生成器函数;生成器表达式;python内部提供的
+    return 函数只存在一个return 结束函数，并且给函数的执行者返回值
+    yield 只要函数中有yield那么他就是生成器函数，不会返回值，不是函数了，生成器函数中可以存在多个yield，yield不会结束生成器函数，一个yield对应一个next
+    生成器相当于自己构建的一个数据集
+    :return:
+    """
+    print('11')
+    yield 4
+    yield 5
+# my = my_yield()
+# print(next(my))
+# print(next(my))
+
+
+def my_yeild2():
+    for i in range(1, 201):
+        yield f'第{i}个包子好了！！'
+# ret = my_yeild2()
+# for i in range(1, 11):   # 惰性机制，没有结束生成器函数
+#     print(next(ret))
+# for i in range(1, 11):
+#     print(next(ret))
+
+
+def my_yield_from():
+    ll = [1, 2, 3, 5, 6, 7]
+    ll2 = [8, 9, 10, 11, 12, 13, 14]
+    yield from ll     # 将ll变成一个迭代器，依次取里面的元素
+    yield from ll2
+# my = my_yield_from()
+# for i in range(13):
+#     print(next(my))   # 先将ll循环完，再循环ll2
+
+
+def liebiaotuidaoshi():
+    """
+    列表推导式：用一行代码构建一个比较复杂有规律的列表
+    循环模式： [变量（加工后的变量） for 变量 in iterable]
+    筛选模式：[变量（加工之后的变量） for 变量 in iterable if 条件]
+    :return:
+    """
+    li = [i for i in range(1, 11)]
+    li2 = [i for i in range(1, 101) if i % 2 == 0]
+    li3 = [i**2 for i in range(1, 11)]
+    li4 = [f'python{i}期' for i in range(1, 101)]
+    names = [['ddd', 'luhu', 'luhu1', 'luhu2', 'lele', 'lee'], ['jenney', 'elle', 'fdf', 'klk']]
+    li5 = [name for i in names for name in i if name.count('e') == 2]
+    dict1 = ['jay', 'jj', 'meet']
+    dict2 = ['周杰伦', '林俊杰', '元宝']
+    dict12 = {dict1[i]: dict2[i] for i in range(len(dict1))}   # 同理，字典推导式
+    print(dict12)
+
+
+def shengchengqi():
+    """
+    生成器表达式，思想同列表推导式一模一样，只不过不方括号改成小括号，
+    优点，节约内存
+    与列表推导式本质上的区别：列表推导式是可迭代对象，生成器表达式是迭代器
+    :return:
+    """
+    names = [['ddd', 'luhu', 'luhu1', 'luhu2', 'lele', 'lee'], ['jenney', 'elle', 'fdf', 'klk']]
+    li5 = (name for i in names for name in i if name.count('e') == 2)
+    print(next(li5))
+    print(next(li5))
+
+
+def neizhihanshu():
+    """
+    内置函数
+    eval 剥去字符串的外衣，运算里面的代码,会有中毒的风险，在网络传输中会被黑客截取替换成病毒，执行eval会中毒
+    exec 与eval相似，代码流，执行代码
+    hash 不可变数据类型才有此方法，获取该值的哈希值
+    help 获取该函数的帮助用法
+    callable 判断一个函数是否可被调用
+
+    :return:
+    """
+    str1 = '1+3'
+    # print(eval(str1))
+    str2 = """
+for i in range(10):
+    print(i)
+    
+    """
+    str3 = 'wer'
+    print(hash(str3))
+    # exec(str2)
+
+
+
+
+neizhihanshu()
 
 
 
