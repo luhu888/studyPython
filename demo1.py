@@ -1476,10 +1476,10 @@ def abss(a):
 """
 凡是可以加key的，他会自动将可迭代对象中的每个元素按照顺序传入key对应的函数中
 """
-ll = [1, 2, 6, 77, 8, 99, -8, 77]
-# print(min(ll, key=abss))   # 返回绝对值最小的数
-print(list(filter(lambda i: i > 3, ll)))  # 返回的是迭代器
-print(list(map(lambda i: i**2, ll)))
+# ll = [1, 2, 6, 77, 8, 99, -8, 77]
+# # print(min(ll, key=abss))   # 返回绝对值最小的数
+# print(list(filter(lambda i: i > 3, ll)))  # 返回的是迭代器
+# print(list(map(lambda i: i**2, ll)))
 dict3 = {'a': 2, 'b': 4, 'c': 1}
 
 
@@ -1487,9 +1487,9 @@ def my_min(a):     # 返回值最小的对应的键
     return dict3[a]
 # print(min(dict3,key=my_min))   # 将dict3的每个元素传给my_min，比较my_min返回值中最小的元素
 # print(min(dict3, key=lambda i: dict3[i]))   # 或者简写成匿名函数
-li2 = [('aa', 3), ('bb', 5), ('cc', 1), ('dd', 9), ('ee', 2)]
-print(min(li2, key=lambda i: i[1]))
-print(sorted(li2, key=lambda i: i[1], reverse=True))
+# li2 = [('aa', 3), ('bb', 5), ('cc', 1), ('dd', 9), ('ee', 2)]
+# print(min(li2, key=lambda i: i[1]))
+# print(sorted(li2, key=lambda i: i[1], reverse=True))
 
 
 def test5():
