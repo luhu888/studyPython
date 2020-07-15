@@ -295,7 +295,7 @@ def my_for1():
     for i in str:
         if i == 88:
             continue
-        elif i%2 == 0:
+        elif i % 2 == 0:
            sum = sum - i
         else:
             sum = sum + i
@@ -372,7 +372,7 @@ def xunhuan_dayin():
             for j in range(len(li[i])):
                 print(li[i][j])
 
-        else:print(li[i])
+        else: print(li[i])
 
 
 def my_dict():
@@ -548,7 +548,7 @@ def gouwu_demo():
     ]
 
     while 1:
-        for i, j in enumerate(goods):
+        for i, j in enumerate(goods):   # enumerate 返回有列表索引和索引对应的值组成的元组（（0，{"name": "主机", "price": 1999}），（1，{"name": "主机", "price": 1999}））
             print('{}\t{}\t{}'.format(i + 1, j["name"], j["price"]))
         input1 = input('请输入编号:')
         if input1.isdecimal():
@@ -659,6 +659,8 @@ def list_kuozhan():
     li2 = [2, 4, 3, 1, 10, 9]
     li.sort()
     print(li)
+    print(li2*2)
+    print(li+li2)
 
 
 def list_delete():
@@ -979,9 +981,9 @@ def canshu4(age, hight, weight, sex='男'):
 def canshu5(*args):
     """
     形参：
-    万能参数 *args,约定俗成叫args
+    动态接收位置参数 *args,约定俗成叫args
     * 代表聚合，它将所有位置参数聚合成一个元组赋值给args
-    万能参数 **kwargs，它将所有的关键字参数聚合成一个字典赋值给kwargs
+    动态接收关键字参数 **kwargs，它将所有的关键字参数聚合成一个字典赋值给kwargs
     :param args:
     :return:
     """
@@ -997,7 +999,7 @@ def wannengcanshu(*args):
 
 def wannengcanshu2(name, age, *args, sex='male'):
     """
-    当函数中出现位置参数，默认参数，万能参数（万能形参）时，将默认参数指定在最后，通过关键字参数调用传参
+    当函数中出现位置参数，默认参数，动态接收位置参数（万能形参）时，将默认参数指定在最后，通过关键字参数调用传参
     :param name:
     :param age:
     :param args:
@@ -1011,9 +1013,9 @@ def wannengcanshu2(name, age, *args, sex='male'):
 
 def wannengcanshu3(name, age, *args, c, sex='nan', **kwargs):
     """
-    当函数中出现位置参数，万能形参，万能关键字参数，默认参数时，默认参数放在万能形参和万能关键字参数之间，万能关键字参数放最后
-    放在万能形参和万能关键字参数之间的位置参数叫仅限关键字参数 c 必须通过关键字参数调用，必传
-    默认参数和仅限关键字参数在调用时位置可以随便放，不会被万能关键字参数聚合到字典里
+    当函数中出现位置参数，动态接收位置参数，动态接收关键字参数，默认参数时，默认参数放在动态接收位置参数和动态接收关键字参数之间，
+    动态接收关键字参数放最后，放在动态接收位置参数和动态接收关键字参数之间的位置参数叫仅限关键字参数，该参数必须通过关键字参数调用，必传默认参数和仅限
+    关键字参数在调用时位置可以随便放，不会被动态接收关键字参数聚合到字典里
     :param name:
     :param age:
     :param args:
@@ -1045,7 +1047,7 @@ count = 0       # hanshu5的全局变量
 def hanshu5():
     """
     取值顺序，就近原则，局部方法就从局部使用，然后取全局的，最后去内置的找
-    LEGB原则：local eclose(父级) global buildin
+    LEGB原则：local enclosed(嵌套函数，父级) global build_in
     作用域：
     内置名称命空间：存放的是内置函数
     全局名称空间：py文件，存放的是py文件（除去函数，类内部的）的变量，函数名与函数在内存中地址的关系
@@ -1055,7 +1057,7 @@ def hanshu5():
     局部作用域可以引用全局作用域的变量，不可以改变全局作用域的变量
     :return:
     """
-    input = 'luhu'  # eclose 父级的局部变量
+    input = 'luhu'  # enclosed 父级的局部变量
 
     def func():
         print(input)
