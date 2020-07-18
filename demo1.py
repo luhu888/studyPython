@@ -1,5 +1,8 @@
 import copy
 import os
+import random
+import time
+from functools import reduce
 
 flag = True
 """
@@ -1302,6 +1305,8 @@ def test3():
     print(i)
 
 ll = []
+
+
 def test4(args):
     ll.append(args)
     return ll  # 将全局变量的值修改了
@@ -1427,6 +1432,8 @@ def neizhihanshu():
     sorted      排序，不是对原列表排序，生成一个新列表，也可以加key,默认从低到高排，reverse=true，是高到低排
     filter      类似列表推导式的筛选模式，返回的是一个迭代器
     map         类似于列表推导式的循环模式，返回的是一个迭代器
+    reduce      累加
+
     :return:
     """
     str1 = '1+3'
@@ -1471,6 +1478,9 @@ for i in range(10):
     obj = zip(str2, tup1)
     for i in obj:
         print(i)
+    # li1 = [1, 4, 9, 16, 25]
+    li2 = [i**2 for i in range(1, 6)]
+    li3 = map(lambda i: i**2, range(1, 6))
 
 
 def abss(a):
@@ -1539,12 +1549,233 @@ def lambda_demo(a, b):
     print(my_lambda(1, 2))
     my_lambda2 = lambda i: (i[0], i[2])    # 接受可切片的数据，返回索引为0和2的值
     print(my_lambda2([1, 2, 3, 4]))
-    my_lambda3 = lambda i,j: i if i>j else j  # 返回两个数中较大的数
+    my_lambda3 = lambda i, j: i if i > j else j  # 返回两个数中较大的数
     print(my_lambda3(9, 6))
 
 
+def reduce_demo(x, y):
+    """
+    reduce 之前的内置函数，累加，第一次传入，1，2   第二次传入1+2  3
+    :param x:
+    :param y:
+    :return:
+    """
+    return 10*x+y
 
-# neizhihanshu()
+# print(reduce(reduce_demo, [1, 2, 3, 4, 5]))
+
+
+def bibao_demo():
+    """
+    闭包  保证数据的安全性
+    内层函数 对外层非全局变量的使用，就会形成闭包
+    被引用的非全局变量也叫做自由变量，这个变量会和内层函数产生一个绑定关系
+    自由变量不会在内存中消失
+    闭包只存在嵌套(高阶)函数中
+    通过代码判断有没有自由变量，确定是不是闭包
+    :return:
+    """
+    li = []
+
+    def average(avg):
+        li.append(avg)
+        return sum(li)/len(li)
+    return average
+
+
+# bi = bibao_demo()
+# print(bi.__code__.co_freevars)
+# print(bi(1000))
+# print(bi(2000))
+# print(bi(3000))
+
+
+def zhuangshiqi():
+    """
+    装饰器就是一个函数，本质是闭包
+    装饰器：完全遵循开放封闭原则，在不改变原函数的代码以及调用方式的前提下，为其增加新功能
+    开放：对代码的拓展是开放的，修改功能（函数）
+    封闭：对源码的修改是封闭的(被装饰函数)
+    :return:
+    """
+    print('打开了一个很复杂的功能')
+
+
+def index(f):
+    """
+    最简单的装饰器，对zhuangshiqi函数的扩展，不改变调用方法及原函数的代码
+    :param f:
+    :return:
+    """
+    def inner():
+        start_time = time.time()
+        print(time.time())
+        f()
+        time.sleep(2)
+        end_time = time.time()-start_time
+        print(end_time)
+    return inner
+# zhuangshiqi = index(zhuangshiqi)
+# zhuangshiqi()
+
+
+def index1(f):
+    def inner():
+        start_time = time.time()
+        time.sleep(2)
+        f()
+        end_time = time.time()-start_time
+        print(end_time)
+    return inner
+
+
+@index1     # 装饰器的语法糖,相当于先执行zhuangshiqi1=index1(zhuangsiqi1)，然后在执行zhuangshiqi1()
+def zhuangshiqi1():
+    print('打开了一个很复杂的功能。。。')
+# zhuangshiqi1()
+
+
+def index2(f):
+    def inner():
+        r = f()
+        start_time = time.time()
+        time.sleep(1)
+        end_time = time.time()-start_time
+        print(f'耗时:{end_time}')
+        return r
+    return inner
+
+
+@ index2
+def zhuangshiqi2():
+    """
+    被装饰函数是一个带有返回值的函数
+    :return:
+    """
+    print('打开了一个很复杂且有返回值的功能！！！')
+    return 666
+# print(zhuangshiqi2())    # 相当于先zhuangshiqi2=index(zhuangshiqi2),然后zhuangshiqi2()
+
+
+def index3(f):
+    def inner(*args, **kwargs):
+        start_time = time.time()
+        r = f(*args, *kwargs)
+        time.sleep(0.4)
+        end_time = time.time()-start_time
+        print(end_time)
+        return r
+    return inner
+
+
+@index3
+def zhuangshiqi3(name, age):
+    """
+    标准版的装饰器，有返回值，有参数的被装饰函数
+    :param name:
+    :param age:
+    :return:
+    """
+    print(f'欢迎{age}岁的{name}打开了一个超复杂的功能')
+    return 666
+# print(zhuangshiqi3('luhu', 12))
+
+
+# -------------------------------------------------------------------------------------------#
+import sys
+# sys.path.append(r'/Users/hulu/PycharmProjects/studyPython/testpath')  # 添加绝对路径
+sys.path.append(os.path.dirname(__file__)+'/testpath')
+"""
+通过相对路径添加自定义模块路径,目的是隐藏文件结构
+"""
+import b
+from my_package import *
+
+
+def mokuai():
+    """
+    自定义模块：
+    模块，本质就是py文件，封装语句的最小单位
+    自定义模块，就是定义py文件：变量定义，可执行语句，for循环，函数定义等
+    模块的运行方式：脚本运行（解释器直接运行）
+                 模块方式：被其他的模块导入，为导入的模块提供资源（变量，函数定义，类函数等）
+    自定义模块被导入（import）时，其中的可执行语句会立即执行
+    python中提供了一种可以判断自定义模块是属于开发阶段还是使用阶段的方法__name__,如果直接出现在模块中，
+    以脚本方式运行时，会返回__main__,以导入方式运行时，会返回模块名
+    sys.path 查看模块所在的路径
+    __file__当前的绝对路径
+    os.path.dirname(__file__)获取一个路径的父路径
+    import xx 和 from xx import *的区别：
+    import xx必须使用模块名xx前缀调用其中的成员
+    from xx import * 可以直接使用成员名来调用，但容易产生命名冲突
+    可以使用别名alias来解决冲突 from xx import xx as xx1
+    import xx as x 给模块起别名，简化
+    可以通过__all__控制from xx import *允许调用的成员,详见my_package.py
+
+    :return:
+    """
+    pass
+    # print(sys.path)
+    # print(b.test_func())
+    # print(age1, pac_func2())
+
+# # 将项目所在的父目录导入即可,xx项目的父目录是testpath
+# sys.path.append(os.path.dirname(__file__)+'/testpath')
+# from xx.z import zz
+# print(zz.z_f())
+# # print(zz.yy.y_f())   # 不想对外界暴露文件结构(yy模块)在zz.py引用时可以使用from ..y.yy import *，通过zz.y_f()调用
+# print(zz.y_f())
+# -------------------------------------------------------------------------------------------#
+
+
+def my_random():
+    """
+    random模块，提供了和随机数获取相关的方法
+    random.random()获取[0.0,1.0)范围内的浮点数
+    random.randomint(a,b)获取[a,b]范围内的一个整数
+    random.uniform(a,b)获取[a,b)范围的=内的浮点数
+    random.shuffle(x)把参数指定的数据中的元素打乱，参数必须是一个可变的数据类型
+    random.sample(x,k)从x中随机抽取k个数据，返回一个列表
+    :return:
+    """
+    li = list(range(10))
+    random.shuffle(li)
+    print(li)
+    li2 = random.sample(li, 5)
+    print(li2)
+
+
+def my_time():
+    """
+    时间模块，封装了时间戳以及与字符串转换的相关功能
+    time.time() 获取时间戳，现在据计算机元年(1970.01.01 00:00:00)的秒数
+    time.gmtime(secs) 获取格式化时间对象，GMT:格林尼治时间,传入一个时间戳，不传就默认当前时间
+    国外的tm_wday第一天从0开始，tm_yday一年的第多少天，tm_isdst是否是夏令时
+    time.localtime(secs)  获取当地时间对象
+    time.strftime(format(str),secs)   # 将时间对象格式化成可读时间
+    time.strptime(str,format(str))   # 将可读时间解析成时间对象
+    time.mktime(format(str))   # 将时间对象转化成时间戳
+    :return:
+    """
+    print(time.gmtime())
+    print(time.localtime())
+    print(time.strftime('%Y-%m-%d %H:%M:%S'))
+    print(time.strptime('2020-07-19 01:00:54', '%Y-%m-%d %H:%M:%S'))
+    print(time.strptime('2020', '%Y'))   # 不传月日，时间，时间默认给0，日期默认给1
+    print(time.mktime(time.localtime()))
+
+
+my_time()
+
+
+
+
+
+
+
+
+
+
 
 
 

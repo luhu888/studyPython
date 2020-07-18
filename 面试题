@@ -1,0 +1,105 @@
+# import copy
+#
+# li = [1, 2, '33', 'adf', [1, 2, 'aa']]
+# li2 = li.copy()
+# li3 = copy.deepcopy(li)
+# li.append('fdfd')
+# li[4].append('hello')
+# li[0] = 9
+# print(li)
+# print('浅拷贝', li2)
+# print('深拷贝', li3)
+# li1 = [1, 2, 5, 6, 7, 8, 9]
+# li2 = iter(li1)
+# while 1:
+#     try:
+#         print(next(li2))
+#     except StopIteration:
+#         print('循环结束')
+#         break
+# li2 = [('aa', 3), ('bb', 5), ('cc', 1), ('dd', 9), ('ee', 2)]
+# li = sorted(li2, key=lambda i: i[1])
+# print(min(li2))
+# # print(li)
+# str1 = '太白金星'
+# str2 = str1[len(str1)::-1]
+# print(str2)
+# s= {}
+# s= []
+# s= {}
+# s = None
+# s = 0
+# s = ()
+# s = 0.00
+# # s = ""
+# print(bool(s))
+# s ='1,2,3'
+# print(list(s.split(',')))
+# portfolio = [{'name':'hh','shares':100, 'price': 9},
+#              {'name':'ll','shares':90, 'price': 9.52},
+#              {'name':'kk','shares':110, 'price': 9.35},
+#              {'name':'dd','shares':500, 'price': 9.99}]
+# c = (i['name']+' '+str(i['shares']*i['price']) for i in portfolio)
+# print(next(c))
+# print(next(c))
+# print(next(c))
+# l1 =[1, 2, 3, 4, 5, 6]
+# l2 = ['hh', 'ff', 'tt', 'll', 'ss']
+# l3 = ('**', '***', '****', '******')
+# l4 = zip(filter(lambda i: i>2,l1), l2, filter(lambda i: len(i)>3,l3))
+# l5 = list(filter(lambda i: i[0]>2 and len(i[2])>3,zip(l1, l2, l3)))
+# print(l5)
+# li = [{"timestamp": 1517996427.94, "value": 100},
+#       {"timestamp": 1517996327.94, "value": 101},
+#       {"timestamp": 1517993337.94, "value": 111}]
+#
+# print(sorted(li, key=lambda i: i['value'], reverse=True))
+
+# v = [lambda:i for i in range(10)]    # 列表推导式，里边是一个匿名函数的循环，
+# """
+# 相当于存放了10个匿名函数的地址，并且循环已经到最后，i为9
+# """
+# print(v[0])    # 打印一个函数地址
+# print(v[0]())   # 打印9
+# v = (lambda: i for i in range(10))
+# print(v)
+# print(v[0])
+# print(v[0]())
+# print(next(v))
+# print(next(v)())   # 前面取过一次next（0），这里取1
+# li = [34, 1, 2, 3, 4, 6, 6, 5, 4, 3, 1]
+# li2 = []
+# for i in range(1, 10):
+#     if li.count(i) == 1:
+#         li2.append(i)
+# print(li2)
+
+# ---------------------------------------------------------------
+"""
+面试题：登陆判断，超过三次退出程序，用户名密码存在register文件中，以｜分隔开
+"""
+def get_info():
+    user_info = {}
+    with open('register') as f1:
+        for i in f1:
+            list = i.strip().split('|')
+            user_info[list[0]] = list[1]
+    return user_info
+
+
+def func():
+    user_info = get_info()
+    count = 1
+    while count < 4:
+        username = input('请输入用户名：').strip()
+        password = input('请输入密码：').strip()
+        if username in user_info and password == user_info[username]:
+            print('登录成功')
+            return True
+        else:
+            print("账号密码错误，请重新登录")
+            count += 1
+
+# func()
+# ---------------------------------------------------------------
+
