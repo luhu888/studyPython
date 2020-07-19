@@ -1,7 +1,12 @@
 import copy
+import datetime
+import hashlib
+import json
 import os
+import pickle
 import random
 import time
+from collections import namedtuple, defaultdict, Counter
 from functools import reduce
 
 flag = True
@@ -789,7 +794,12 @@ def open_file():
     """
     file_handler约定俗成名称叫文件句柄，对文件的操作都要通过文件句柄
     encoding 可以不写，默认操作系统的默认编码
-    mode 默认只读模式打开
+    mode 默认只读模式打开 rt
+    t --> text   单位t, b
+    b --> binary
+    a --> append 追加
+    w --> write   读写方向 w,r
+    r --> read
     r 只读文本
     r+ 先读光标到结尾并追加写
     rb 非文本      r+b
@@ -1688,8 +1698,8 @@ sys.path.append(os.path.dirname(__file__)+'/testpath')
 """
 通过相对路径添加自定义模块路径,目的是隐藏文件结构
 """
-import b
-from my_package import *
+# import b
+# from my_package import *
 
 
 def mokuai():
@@ -1765,7 +1775,219 @@ def my_time():
     print(time.mktime(time.localtime()))
 
 
-my_time()
+def my_datetime():
+    """
+    datetime 模块封装了一些和日期，时间相关的类 date time timedelta,多用于数学计算
+    timedelta 时间的变化量
+    :return:
+    """
+    # date类：获取时间对象的各个属性
+    dt = datetime.datetime(2020, 3, 1, 12, 23, 33)
+    d = datetime.date(2010, 10, 10)
+    t = datetime.time(12, 13, 14)
+    print(dt)
+    print(d.month)
+    print(t.hour)
+    print(dt.month)
+    print(dt.hour)
+    td = datetime.timedelta(days=1, hours=1, minutes=12)
+    td2 = datetime.timedelta(hours=3, minutes=23, seconds=34)
+    t1 = td - td2   # 时间运算
+    t2 = dt + td
+    print(t2)
+
+
+def my_os():
+    """
+    os 和操作系统相关的操作
+    文件的重命名，删除
+    os.remove(path)
+    os.rename(old,new)
+    os.removedirs()   # 文件夹必须是空的才能删除
+    os.path.dirname(path)  # 返回path的父目录
+    os.path.basename(path) # 返回path中最后一级的名称（文件夹名，或文件名）
+    os.path.split(path)    # 把path中的路径和文件名切分开，返回一个元组
+    os.path.join(path,paths) # 将多个路径拼接起来
+    os.path.abspath(path)   # 获取当前项目路径拼接path返回
+    os.path.isdir(path)    # 判断是不是文件夹
+    os.path.exists()       # 判断文件，路径是否存在
+    :return:
+    """
+    path = os.path.join(r'd:', 'aaa', 'ggg')
+    path1 = os.path.abspath('ff')
+    print(path1)
+
+
+def my_sys():
+    """
+    和python解释器相关的操作
+    sys.argv[0]  # 脚本名
+    sys.argv[1]  # 第二个参数
+    sys.path    # 解释器寻找模块的路径
+    sys.modules # 返回系统已经加载的模块，以字典形式返回
+
+    :return:
+    """
+    # return int(sys.argv[1]) + int(sys.argv[2])
+    # python demo1.py 1 3  命令行执行
+    print(sys.modules)
+
+
+def my_json():
+    """
+    json(javaScript Object Notation):把所有的东西变成字符串，用于存储或网络传输
+    json的序列化是不完全的序列化过程
+    序列化过程（serialization）将内存中的数据转换成字节串，用以保存文件或网络传输，称为序列化过程
+    反序列化过程（deserialization）从文件，网络中获取的数据，转换成内存中原来的数据类型，称为反序列化过程
+    dumps 序列化成json字符串，存在内存中
+    dump  将字符串写入文件中
+    loads 从内存中反序列化成json字符串
+    load  从文件中反序列化成json字符串
+    json文件通常都是一次性写，一次性读
+    :return:
+    """
+    s = json.dumps([1, 2, 3, 6, 8])
+    s1 = json.dumps((1, 2, 3, 6, 8))   # 元组序列化后变成列表，无法序列化集合
+    # print(type(s))
+    print(s)
+    with open('serialization.txt', mode='at', encoding='utf-8') as f1:
+        json.dump(s1, f1)
+
+    load = json.loads(s1)
+    print(load)
+    # print(type(load))
+    with open('serialization.txt', mode='rt', encoding='utf-8') as f2:
+        print(type(f2))
+        ret = json.load(f2)
+        print(ret)
+    os.remove('serialization.txt')
+    with open('json.txt', mode='at', encoding='utf-8') as f3:
+        f3.write(json.dumps([1, 4, 6, 8, 99, 0])+'\n')
+        f3.write(json.dumps([1, 3, 6, 11, 99, 22])+'\n')
+
+    with open('json.txt', mode='rt', encoding='utf-8') as f4:
+        for line in f4:
+            print(json.loads(line.strip()))
+
+
+def my_pickle():
+    """
+    pickle将python中所有的数据类型转换成字节串，序列化过程
+          将字节串转化成python中的数据类型，反序列化过程
+    pickle多次读写容易出错，常用场景一次读一次写，不能跨语言
+    与json对比：
+    json：1.不是所有的数据类型都可以序列化
+          2.不能多次对同一个文件序列化
+          3.json数据可以跨语言
+    :return:
+    """
+    bys = pickle.dumps([1, 2, 3, 'tt'])
+    bys1 = pickle.dumps((1, 4, 5, 7))
+    bys3 = pickle.loads(bys1)
+    # print(bys3)
+    # print(type(bys3))
+    with open('pickle.txt', mode='wb') as f1:   # 这里的模式要使用b模式，操作字节
+        pickle.dump((1, 2, 3, 5, 'ss'), f1)    # 一次性写入文件中
+
+    with open('pickle.txt', mode='ab') as f2:   # 这里的模式要使用ab模式，追加操作字节
+        pickle.dump((1, 2, 3, 5, 'ss'), f2)
+        pickle.dump((8, 2, 3, 4, 'ff'), f2)
+
+    with open('pickle.txt', mode='rb') as f3:
+        for i in range(3):   # pickle多次读写容易出错
+            print(pickle.load(f3))
+
+
+def my_collections():
+    """
+    collections模块
+    namedtuple()：命名元组
+    defaultdict():默认值字典
+    Counter()：计数器
+
+    :return:
+    """
+    Rectangle = namedtuple('这是矩形的类Rectangle的说明', ['length', 'width'])
+    r = Rectangle(10, 5)
+    # print(r.length)  # 通过属性访问元组的元素
+
+    dict1 = defaultdict(int, name='luhu', age=12)   # int为工厂函数
+    dict2 = defaultdict(lambda: 4, name='luhu', age=12)   # int为工厂函数
+
+    # print(dict2['adress'])
+    # print(dict(dict2))
+    c = Counter('ewrwetedfagjjdgh哈哈哈你好')
+
+    print(dict(c))  # 返回一个计数对象
+    print(c.most_common())  # 返回一个列表，字母和对应出现次数以元组形式存放
+
+
+def my_hashlib():
+    """
+    hashlib 封装一些用于加密的类
+    目的：用来判断和验证，并非解密
+    特点：把一个大的数据切分成不同块，分别对不同的块进行加密，再汇总的结果，和直接对整体数据加密的结果是一致的
+         单向加密，不可逆
+         原始数据的一点小变化，将导致结果雪崩式差异
+    :return:
+    """
+    m = hashlib.md5()   # 获取一个加密对象
+    m.update(b'hello')  # 使用加密对象的update，进行加密，只接收字节类型
+    m.update('abc你好'.encode('utf-8'))  # 多次调用会累加加密
+    res = m.hexdigest()    # 通过hexdigest获取结果
+    print(res)
+
+
+def my_module1():
+    """
+    不同的数据库模块有同样的连接方法
+    模块别名统一接口，归一化思想
+    :return:
+    """
+    res = input('请输入')
+    if res == 'mysql':
+        import mysql1 as sm
+    elif res == 'oracle':
+        import oracle1 as sm
+
+    sm.conect()
+
+
+def my_re():
+    """
+    正则表达式
+
+    []  一个中括号只表示一个字符位置
+    [abc] 匹配a或b或c
+    [0-9a-zA-z]  按照asc码表进行的范围比对，匹配一个字符在0-9，a-z，A-Z之中的一个字符
+    在正则表达式中能帮助我们表示匹配的内容的符号都是正则中的元字符
+    \d  [0-9] digit
+    \w  [0-9a-zA-z_]   表示匹配数字字母下划线  word
+    \s可以匹配所有的空白     |\t|\n  空格，tab，换行(enter),换行不容易看出来
+    \D   不是数字都匹配
+    \W   不是数字字母下划线就可以匹配
+    \S   匹配非空白字符
+    [\d\D] [\s\S][\w|w]    匹配所有
+    .    匹配除换行符以外的所有
+    [^\d]   [^1]    匹配所有的非数字
+    ^    匹配一个字符串的开始
+    $    匹配一个字符串的结尾
+    ｜    或  a表达式|b表达式 匹配a或b表达式，如果a匹配成功，不会匹b，如果两个规则有重叠的部分，总是把长的放在左边
+             abc|ab  匹配abc或ab
+    ()   分组   约束或描述的范围             www\.(baidu|jd|taobao)\.com
+    \b      匹配边界                hello world  o\b  只匹配第一个在单词尾的o
+    量词
+    {n}     表示匹配n次
+    {n,}    表示至少匹配n次
+    {n,m}   表示至少匹配n次，至多匹配m次
+    ?       表示匹配0次或1次
+    +       表示匹配1次或多次
+    *       表示匹配0次或多次
+
+    :return:
+    """
+
+my_hashlib()
 
 
 
