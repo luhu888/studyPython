@@ -5,6 +5,7 @@ import json
 import os
 import pickle
 import random
+import re
 import time
 from collections import namedtuple, defaultdict, Counter
 from functools import reduce
@@ -1983,11 +1984,30 @@ def my_re():
     ?       表示匹配0次或1次
     +       表示匹配1次或多次
     *       表示匹配0次或多次
-
+    \d+(\.\d+)?  匹配小数或整数
+    贪婪匹配 : 在量词范围允许的情况下，尽可能多的匹配内容   \d{3,}6    123456657896 整个都会被匹配上
+    惰性匹配：在量词范围允许的情况下，尽可能少的匹配内容     \d{3,}?6   (量词后加？)        123456657896 123456会被匹配上
+    .*?x  表示匹配任意字符任意次数，遇到x就停下来（惰性匹配）
+    转义符：原本有特殊意义的字符放到字符组里[],可以取消它的意义，-在字符组里表示范围，不希望表示范围可以放在最前面
+    [().*+?] 在字符组中会取消它的特殊意义，或者加\取消特殊意义
+    findall  只显示括号里匹配到的内容，优先显示分组中的
+    search 还是按照完整的正则进行匹配，显示也显示第一个匹配到的内容，但是可以给group方法传参获取具体文组的内容
+    加括号是为了对真正需要的内容进行提取
     :return:
     """
+    ret0 = re.findall('4\\d\\d', '3244242t435242')
+    ret = re.findall('4(\\d)(?:\\d)', '3244242t435242')   # 取消优先显示分组2 ?:
+    ret1 = re.search('4(\d)(\d)', '3244242t435242324324322')   # search只匹配一个，匹配不上返回会报错
+    print(ret0)
+    print(ret)
+    if ret1:
+        print(ret1.group())
+        print(ret1.group(1))    # 匹配第1个分组中的
+        print(ret1.group(2))
 
-my_hashlib()
+
+
+my_re()
 
 
 
