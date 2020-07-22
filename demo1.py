@@ -1993,10 +1993,19 @@ def my_re():
     findall  只显示括号里匹配到的内容，优先显示分组中的
     search 还是按照完整的正则进行匹配，显示也显示第一个匹配到的内容，但是可以给group方法传参获取具体文组的内容
     加括号是为了对真正需要的内容进行提取
+    split((re),str)  切割，返回被切开的字典，也可以使用括号对提取规则匹配的内容进行提取
+    sub((re),res，str，index)    替换   将res按照re规则替换索引位置为res
+    subn((re),new,str)  替换，将str按照规则re匹配内容，并将匹配到的内容替换成new，返回元组，里面存放替换的str和替换次数
+    match((re),str)    匹配以re规则开头的内容，其他和search方法一致，match一般用来规定字符串必须是这样的
+    compile()  一个正则表达式如果要用多次，可以先用compile编译一下，节省时间
+    finditer()   节省空间，将匹配的内容作为迭代器返回,结果集特别多时用
+    分组命名   给分组命名，方便取值，详见ret5,分组命名的引用，匹配开头结尾相同规则的内容
+               也可以通过分组的索引取规则   '<(\w+)>.*?</\\1>'  \1在Python中有转义，要使用\阻止转义
+    '<(?P<tag>\w+)>.*?</(?P=tag)>'
     :return:
     """
-    ret0 = re.findall('4\\d\\d', '3244242t435242')
-    ret = re.findall('4(\\d)(?:\\d)', '3244242t435242')   # 取消优先显示分组2 ?:
+    ret0 = re.findall('4\d\d', '3244242t435242')
+    ret = re.findall('4(\d)(?:\d)', '3244242t435242')   # 取消优先显示分组2 ?:
     ret1 = re.search('4(\d)(\d)', '3244242t435242324324322')   # search只匹配一个，匹配不上返回会报错
     print(ret0)
     print(ret)
@@ -2005,9 +2014,152 @@ def my_re():
         print(ret1.group(1))    # 匹配第1个分组中的
         print(ret1.group(2))
 
+    ret3 = re.compile('4\\d(\\d)')
+    ret3.search('dafas2341332qdfasdfdsa')
+    ret4 = re.finditer('\d', '342ewrw2342432')
+    # for i in ret4:
+    #     print(i.group())
+    # ret5 = re.search('\\d\\d\\d[1](\\d)(\w*)(?P<name>\\d+)(\\d?)\\d', 'dsafsd234234dfsfsdf23423423asdrwr234211werwer11123423')
+    # print(ret5.group('name'))
+    # ret6 = re.search('<(?P<tag>\w+)>.*?</(?P=tag)>', '<ab>2342erwer</abc>24424</abvbn>')
+    # print(ret6)
+    ret7 = re.search('<(\w+)>.*?</\\1>', '<ab>2342erwer</ab>24424</abvbn>')
+    print(ret7)
+    # print(ret0)
+    # print(ret)
+    # if ret1:
+    #     print(ret1.group())
+    #     print(ret1.group(1))    # 匹配第1个分组中的
+    #     print(ret1.group(2))
 
 
-my_re()
+def filter_int():
+    reg = '1-23+34*56+(56-5.09)+4.55'
+    ret = re.findall('\d+\.\d+|(\d+)', reg)
+    ret = filter(lambda n: n, ret)
+    print(list(ret))
+
+
+sys.setrecursionlimit(100000)   # 可以手动修改最大递归深度
+count = 0
+
+
+def digui():
+    """
+    递归函数（Recursion），python的递归函数默认递归最大深度是1000层
+    return返回给上一级调用digui()，层层递归，return到第一级
+    并不是函数中有return，return的结果就一定能被调用函数的外层接收到
+    :return:
+    """
+    global count
+    count += 1
+    if count == 4:
+        return
+    print(count)
+    digui()
+    print('666')
+
+
+def digui2():
+    global count
+    count += 1
+    print(count)
+    if divmod(count, 10) == (5, 1):
+        return
+    digui2()
+
+# ----------------------------------------------------------------------------------------------------- #
+def digui3(count):
+    count += 1
+    print(count)
+    if count == 5:
+        return 5
+
+    return digui3(count)
+
+# def digui3(1):
+#     count += 1
+#     print(2)
+#     if 2 == 5:
+#         return 5
+#     digui3(2)
+# def digui3(2):
+#     count += 1
+#     print(3)
+#     if 3 == 5:
+#         return 5
+#     digui3(3)
+# def digui3(3):
+#     count += 1
+#     print(4)
+#     if 4 == 5:
+#         return 5
+#     digui3(4)
+# def digui3(4):
+#     4 += 1
+#     print(5)
+#     if count == 5:
+#         return 5     -->返回给digui(4)，digui3()没有return，所以拿到的是None
+#     digui3(count)
+# ----------------------------------------------------------------------------------------------------- #
+
+
+res = 1
+def jiecheng(number):
+    global res
+    res = number*res
+    print(res)
+    number -= 1
+    if number == 1:
+        return res
+    return jiecheng(number)
+
+count = 0
+def fibonacci_sequence(a=0, b=1):   # 斐波那契数列，后一个数等于前两个之和
+    global count
+    count += 1
+    if count == 100:
+        print(a)
+    c = a + b
+    a = b
+    b = c
+    fibonacci_sequence(a, b)
+# print('-->', digui3(1))
+# fibonacci_sequence()
+# print('-->',jiecheng(5))
+
+
+def logger(*args):
+    """
+    带参数的装饰器
+    :param path:
+    :return:
+    """
+    def log(f):
+        def inner(*args1, **kwargs):
+            print(args[0])
+            print('%s执行了函数%s' % (time.strftime('%Y-%m-%d %H:%M:%S'), f.__name__), '写入'+args[0])
+            ret = f(*args1, **kwargs)
+            return ret
+        return inner
+    return log
+
+
+@logger('login.log')    # ret = logger(login.log) login = ret(login)
+def login():
+    print('执行了登录功能')
+
+
+@logger('add_goods.log')
+def add_goods():
+    print('执行了添加商品功能')
+
+
+
+
+
+
+login()
 
 
 
