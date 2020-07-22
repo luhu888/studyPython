@@ -2,13 +2,16 @@ import copy
 import datetime
 import hashlib
 import json
+import logging
 import os
 import pickle
 import random
 import re
+import shutil
 import time
 from collections import namedtuple, defaultdict, Counter
 from functools import reduce
+from logging import handlers
 
 flag = True
 """
@@ -2155,11 +2158,157 @@ def add_goods():
     print('执行了添加商品功能')
 
 
+def digui_file(path):  # 获取一个文件夹下所有文件的大小
+    size = 0
+    dir_list = os.listdir(path)  # 列出该路径下的所有文件夹，返回一个list
+    # print(dir_list)
+    for i in dir_list:
+        abs_path = os.path.join(path, i)
+        if os.path.isfile(abs_path):  # 该路径拼接遍历到的文件(夹)名，判断其是否是一个文件
+            print(i, os.path.getsize(abs_path))  # 获取文件的大小
+            file_size = os.path.getsize(abs_path)
+            size = size + file_size
+            # print(size)
+
+        else:  # 不是文件，递归返回
+            digui_file(abs_path)
+    return size
+
+
+# print(digui_file(r'D:\Users\hulu\PycharmProjects\badmintonRobot\tmp'))
+
+
+def my_shutil():
+    # shutil.copytree('tmp', 'tmp2',ignore=shutil.ignore_patterns('*.py'))
+    # 移动文件/目录
+    shutil.move("move", "tmp", copy_function=shutil.copy2)
+
+    # 获取磁盘使用空间
+    total, used, free = shutil.disk_usage(".")
+    print("当前磁盘共: %iGB, 已使用: %iGB, 剩余: %iGB" % (total / 1073741824, used / 1073741824, free / 1073741824))
+
+    # 压缩文件
+    # shutil.make_archive('压缩文件夹的名字', 'zip','待压缩的文件夹路径')
+    # shutil.make_archive('logging2', 'zip','/Users/jingliyang/PycharmProjects/面试题/常用模块/随机数')
+    #
+    # # 解压文件
+    # shutil.unpack_archive('zip文件的路径.zip','解压到目的文件夹路径')
+    # shutil.unpack_archive('/Users/jingliyang/PycharmProjects/面试题/常用模块/shutil模块/logging2.zip','/Users/jingliyang/PycharmProjects/面试题/常用模块/shutil模块/tmp')
+
+
+def my_logging(a, b):
+    """
+    日志模块，用于调试和定位问题
+    logging.debug('debug message')
+    logging.info('info message')
+    logging.warning('warning message')
+    logging.error('error message')
+    logging.critical('critical message')
+
+    logging.basicConfig()函数中可通过具体参数来更改logging模块默认行为，可用参数有：
+    filename：用指定的文件名创建FiledHandler，这样日志会被存储在指定的文件中。
+    filemode：文件打开方式，在指定了filename时使用这个参数，默认值为“a”还可指定为“w”。
+    format：指定handler使用的日志显示格式。
+    datefmt：指定日期时间格式。
+    level：设置rootlogger（后边会讲解具体概念）的日志级别
+    stream：用指定的stream创建StreamHandler。可以指定输出到sys.stderr,sys.stdout或者文件(f=open(‘test.log’,’w’))，默认为sys.stderr。若同时列出了filename和stream两个参数，则stream参数会被忽略。
+    format参数中可能用到的格式化串：
+    %(name)s Logger的名字
+    %(levelno)s 数字形式的日志级别
+    %(levelname)s 文本形式的日志级别
+    %(pathname)s 调用日志输出函数的模块的完整路径名，可能没有
+    %(filename)s 调用日志输出函数的模块的文件名
+    %(module)s 调用日志输出函数的模块名
+    %(funcName)s 调用日志输出函数的函数名
+    %(lineno)d 调用日志输出函数的语句所在的代码行
+    %(created)f 当前时间，用UNIX标准的表示时间的浮 点数表示
+    %(relativeCreated)d 输出日志信息时的，自Logger创建以 来的毫秒数
+    %(asctime)s 字符串形式的当前时间。默认格式是 “2003-07-08 16:49:45,896”。逗号后面的是毫秒
+    %(thread)d 线程ID。可能没有
+    %(threadName)s 线程名。可能没有
+    %(process)d 进程ID。可能没有
+    %(message)s用户输出的消息
+    :return:
+    """
+    # 日志输出到屏幕
+    logging.basicConfig(level=logging.DEBUG,
+                        format='当前时间%(asctime)s - %(name)s - %(module)s - %(levelname)s: %(message)s',
+                        filename='test.log',
+                        )
+
+    logging.debug('a+b=%s' % (a + b))
+    return a + b
+
+
+def my_getLogger(a, b):
+    """
+    logging库提供了多个组件：Logger、Handler、Filter、Formatter。
+    Logger对象提供应用程序可直接使用的接口，
+    Handler发送日志到适当的目的地，
+    Filter提供了过滤日志信息的方法，
+    Formatter指定日志显示格式。
+    另外，可以通过：logger.setLevel(logging.Debug)设置级别,
+    也可以通过fh.setLevel(logging.Debug)单对文件流设置某个级别
+    :param a:
+    :param b:
+    :return:
+    """
+    # 创建一个handler，用于写入日志文件
+    fh = logging.FileHandler('test.log', encoding='utf-8')
+    # 再创建一个handler，用于输出到控制台
+    ch = logging.StreamHandler()
+    logging.basicConfig(level=logging.DEBUG,
+                        format='当前时间%(asctime)s - %(name)s - %(module)s - %(levelname)s: %(message)s',
+                        handlers=[fh, ch])
+
+    logging.debug('a+b=%s' % (a + b))
+    return a + b
+
+
+def my_split_logging():
+    """
+    StreamHandler:不使用配置文件的方式
+    FileHandler:logging模块自带的三个handler之一。继承自StreamHandler。将日志信息输出到磁盘文件上。
+    RotatingFileHandler:位于logging.handlers支持循环日志文件
+    TimedRotatingFileHandler:定时循环日志handler，位于logging.handlers，支持定时生成新日志文件,when=‘D’，interval=2，就是指两天的时间间隔，
+    backupCount决定了能留几个日志文件。超过数量就会丢弃掉老的日志文件。
+    :return:
+    """
+    sh = logging.StreamHandler()
+    rh = handlers.RotatingFileHandler('myapp.log', maxBytes=1024, backupCount=5)
+    fh = handlers.TimedRotatingFileHandler(filename='x2.log', when='s', interval=5, encoding='utf-8')
+    logging.basicConfig(
+        format='%(asctime)s - %(name)s - %(levelname)s -%(module)s:  %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S %p',
+        handlers=[fh, sh, rh],
+        level=logging.ERROR
+    )
+
+    for i in range(1, 100000):
+        time.sleep(1)
+        logging.error('KeyboardInterrupt error %s' % str(i))
+
+
+li = [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 16, 20, 21, 22, 23, 25, 26]
+
+
+def erfen(x, mid=(len(li)-1)//2):
+    if li[mid] == x:
+        return mid
+    elif li[mid] > x:
+        mid = (mid-1)//2
+    elif li[mid] < x:
+        mid = (mid+len(li)-1)//2
+
+    return erfen(x, mid)
 
 
 
 
-login()
+
+
+print(erfen(16))
+
 
 
 
