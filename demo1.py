@@ -12,6 +12,7 @@ import time
 from collections import namedtuple, defaultdict, Counter
 from functools import reduce
 from logging import handlers
+from math import pi
 
 flag = True
 """
@@ -2301,14 +2302,191 @@ def erfen(x, mid=(len(li)-1)//2):
         mid = (mid+len(li)-1)//2
 
     return erfen(x, mid)
+# print(erfen(16))
 
 
+class Person:  # 定义一个人类
+    """
+    面向对象：定义一个模子，用来描述一类事物，具有相同的属性和方法
+    类是一个大范围，约束了事物的属性，但不能约束具体的值
+    对象是一个具体的内容，是类的产物，遵循类的约束，同时给属性赋值
+    类下面的静态变量，属性，绑定方法都储存在该类的命名空间中
+
+    特殊的类属性
+    类名.__name__# 类的名字(字符串)
+    类名.__doc__# 类的文档字符串
+    类名.__base__# 类的第一个父类(在讲继承时会讲)
+    类名.__bases__# 类所有父类构成的元组(在讲继承时会讲)
+    类名.__dict__# 类的字典属性
+    类名.__module__# 类定义所在的模块
+    类名.__class__# 实例对应的类(仅新式类中)
+    """
+    role = 'person'
+
+    def __init__(self, name, aggressivity, life_value):   # 必须叫这个名字，创建对象时会自动调用这个初始化方法
+        self.name = name
+        self.aggressivity = aggressivity
+        self.life_value = life_value
+
+    def attack(self, dog):
+        dog.life_value -= self.aggressivity
+        return dog.life_value
 
 
+class Dog:
+    def __init__(self, aggressivity, life_value, name='dog'):   # 必须叫这个名字，创建对象时会自动调用这个初始化方法
+        self.name = name  # 为类创建属性，所有的这一个对象需要使用的属性都需要与self关联起来
+        self.aggressivity = aggressivity   # 执行完init中的逻辑之后，self变量会自动的被返回到调用处
+        self.life_value = life_value
+
+    def bark(self, person):   # 为类创建方法
+        person.life_value -= self.aggressivity
+        return person.life_value
+# per = Person('ll', 23, 400)    # 实例化，会自动传到__init__中，调用__init__把空间的内存地址作为self参数传递到函数内部
+# # print(dir(per))
+# # print(per.__dict__)
+# # print(per.__doc__)
+# dog = Dog(2, 100)
+# per.attack(dog)
+# dog.bark(per)
+# per.sex = 'male'  # 对象属性的新增
+# print(per.__dict__)
+# del per.name  # 对象属性的删除
+# print(per.__dict__)
 
 
-print(erfen(16))
+class MyCircle:
+    def __init__(self, semicircle):
+        self.semicircle = semicircle
 
+    def get_square(self, pi):
+        square = self.semicircle**2*pi
+        return square
+# my_circle = MyCircle(7)
+# print(my_circle.get_square(math.pi))
+
+
+exp = '1+2-3+2*8/9+6-3*3/5*(1+2)'
+
+
+def jisuanqi(exp):
+    ret = re.search('(\d+(\.\d+)?)[*/](\d+(\.\d+)?)', exp)
+    if ret:
+        if '*'in ret.group():
+            s = ret.group().split('*')
+            ret1 = float(s[0])*float(s[1])
+            exp = exp.replace(str(ret.group()), str(ret1))
+            print(exp)
+            jisuanqi(exp)
+        elif '/' in ret.group():
+            s = ret.group().split('/')
+            ret1 = float(s[0]) / float(s[1])
+            exp = exp.replace(str(ret.group()), str(ret1))
+            print(exp)
+            jisuanqi(exp)
+    ret2 = re.search('(\d+(\.\d+)?)[-+](\d+(\.\d+)?)', exp)
+    if ret2:
+        if '+'in ret2.group():
+            s = ret2.group().split('+')
+            res = float(s[0])+float(s[1])
+            exp = exp.replace(str(ret2.group()), str(res))
+            print(exp)
+            jisuanqi(exp)
+        elif '-'in ret2.group():
+            s = ret2.group().split('-')
+            res = float(s[0])-float(s[1])
+            exp = exp.replace(str(ret2.group()), str(res))
+            print(exp)
+            jisuanqi(exp)
+    else:
+        print(exp)
+        return exp
+
+
+class MyCount:
+    """
+    类的静态变量
+    如果一个变量是所有对象共享的值，那么这个变量应该被定义成静态变量，所有和静态变量相关的增删改查都应该使用类名来处理
+    """
+    count = 0
+
+    def __init__(self):
+        MyCount.count += 1     # 记录实例化的次数
+# my = MyCount()
+# my2 = MyCount()
+# print(my2.count)
+
+
+class Student:
+    """
+    类的组合:在一个类中以另外一个类的对象作为数据属性，称为类的组合
+    初始化对象的时候把要引用的类对象作为参数放进要调用的类对象中，通过对象名.变量名.属性名，来查看组合类中的属性值
+    通过对象名.变量名.方法名()调用组合类中的方法
+    """
+    def __init__(self, name, sex, phone_number):
+        self.name = name
+        self.sex = sex
+        self.phone_number = phone_number
+
+    def tingke(self):
+        print('学生在听课')
+
+
+class ClassRoom:
+    def __init__(self, amount, student):
+        self.student = student
+        self.amount = amount
+# cla = ClassRoom(11, Student('luhu', 'male', '15856691310'))
+# print(cla.student.name)
+# cla.student.tingke()
+
+
+class Project:
+    """
+    类组合的好处，关联的类的属性值修改，所有绑定该类的对象中的属性值都会被修改
+    """
+    def __init__(self, course, time, teacher):
+        self.course = course
+        self.time = time
+        self.teacher = teacher
+
+
+class Course:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+# linux = Course('linux', '13400')
+# python = Course('python', '12900')
+# lin_pro = Project(linux, '6mouth', 'wusir')
+# print(lin_pro.course.price)
+# py_pro = Project(python, '3mouth', 'jane')
+# lin_pro2 = Project(linux, '7mouth', 'xiaoming')
+# linux.price = '20000'
+# print(lin_pro2.course.price)
+# print(lin_pro.course.price)
+
+
+class Circle:
+    def __init__(self, r):
+        self.r = r
+
+    def square(self):
+        s = pi*self.r**2
+        return s
+
+
+class RingCircle:
+    def __init__(self, r1, r2):
+        r1, r2 = (r1, r2) if r1 > r2 else (r2, r1)     # 三元运算符
+        self.outside_circle = Circle(r1)
+        self.inside_circle = Circle(r2)
+
+    def ring_square(self):
+        return self.outside_circle.square() - self.inside_circle.square()
+
+
+rc = RingCircle(7, 4)
+print(rc.ring_square())
 
 
 
