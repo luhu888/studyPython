@@ -2483,10 +2483,284 @@ class RingCircle:
 
     def ring_square(self):
         return self.outside_circle.square() - self.inside_circle.square()
+# rc = RingCircle(7, 4)
+# print(rc.ring_square())
 
 
-rc = RingCircle(7, 4)
-print(rc.ring_square())
+class Animal:
+    """
+    继承：Cat继承Animal类
+          Animal  父类（超类，基类）
+          Cat     子类（派生类）
+          子类可以使用父类的方法和静态变量
+    """
+    def __init__(self, name):
+        self.name = name
+        self.blood = 100
+        self.waise = 200
+
+    def run(self):
+        print(self.name, '动物会跑')
+
+    def drink(self):
+        print(self.name, '会喝水')
+
+    def breath(self):
+        print(self.name+'会呼吸')
+
+
+class Cat(Animal):
+    def miaomiao(self):
+        print('喵喵叫')
+
+    def run(self):
+        Animal.run(self)
+        print(self.name, '喵喵会跑')
+
+    def drink(self):
+        self.waise += 300
+        Animal.drink(self)   # 使用父类类名，调用父类的同名方法
+        print(self.name+'喝水会加智慧')
+
+
+class Fish(Animal):
+    """
+    父类和子类方法的选择：
+        子类的对象如果调用方法，永远优先调用自己的，如果自己没有才会用父类的
+        如果自己有还想用父类的，直接在子类方法中调用父类的方法
+        如果调用父类的方法名与子类的方法名同名，需要在子类方法中使用父类名.方法名，来调用父类方法
+        如果调用子类自己的其他方法，需要在子类方法中使用self.方法名，来调用子类中其他的方法
+    """
+    def drink(self):
+        self.blood += 100
+        # Animal.drink(self)
+        print(self.name+'喝水会加血')
+
+    def breath(self):
+        print(self.name+'有自己的呼吸方式')
+        # Fish.drink(self)
+        self.drink()   # 调用子类自己的其他方法
+        Animal.drink(self)
+        print('呼吸的时候会喝水')
+# cat = Cat('猫')  # 调用init，对象在自己的空间中没找到init，然后会找父类的init
+# fish = Fish('鱼')
+# # cat.drink()
+# # fish.drink()
+# fish.breath()
+# print(cat.__dict__, fish.__dict__)
+
+
+class Foo:
+    def __init__(self):
+        self.func()   # 在每一个self调用func的时候，我们不看这句话在哪里执行，只看self是谁，这里self是Son，son.func()
+
+    def func(self):
+        print('in Foo')
+
+
+class Son(Foo):
+    def func(self):
+        print('in Son')
+# s = Son()
+
+
+class Cat2(Animal):
+    """
+    子类也有初始化方法，这时候要使用父类名.__init__(self,args)
+    """
+    def __init__(self, name, eye_color):
+        Animal.__init__(self, name)   # 调用了父类的初始化，去完成一些通用属性的初始化
+        self.eye_color = eye_color    # 派生属性
+# cat2 = Cat2('小白', 'blue')
+# print(cat2.eye_color)
+
+
+class A:
+    """
+    新式类，python3中的类，python2中继承obj的类就叫新式类
+    经典类，python2中没有继承obj的类
+    多层的单继承，如果子类对象中没有需要调用的方法，如果父类也没有，就去爷级中寻找，知道找到为止
+    当B，C类继承A类时，D继承B，C，D(B,C)初始化D调用D中的方法，如果没有，会从父类中找，优先近的B，如果B中没有，找C类中就叫往广度
+    找，找A类中就叫往深度找，新式类总是优先广度寻找，经典类会优先深度寻找
+    优先广度算法，C3算法
+    """
+    def func1(self):
+        print('in A')
+class B(A):pass
+class C(B):pass
+class D:
+    def func1(self):
+        print('in D')
+class F(A, D):
+    """如果多继承的父类中都有子类要调用的方法，那么F(A,D)先继承谁就优先调用其中的方法
+    Python3中的类都继承object类，object是个类祖宗@
+    """
+    pass
+# C().func1()
+# F().func1()    # in A
+# print(A.__bases__)   # 打印该类的上一级父类
+# print(F.__base__)
+# print(F.__bases__)
+f = F()
+# print(type(f) is F)    # 判断F类是不是f的类型，但是无法判断F的父类A是不是f的类型
+# print(isinstance(f, A))    # 判断F类是不是f的类型，也可以判断F的父类A是不是f的类型
+
+# a =A()
+# print(A.func1)    # 函数<function A.func1 at 0x0000019D969557B8>
+# print(a.func1)    # 方法<bound method A.func1 of <__main__.A object at 0x0000019D96948A90>>
+# print(A.__module__)
+
+
+def my_data():
+    """
+    数据结构
+    {}    字典      key-value 通过key找value的值特别快
+    []    序列      通过index找值特别快
+    ()    元组
+    {1,}  集合
+    'str' 字符串
+
+    队列Queue：先进先出FIFO（first in first out）put(1) put(2) put(5) put(3) put(7),第一次get取值1，第二次2，第三次取5
+    栈Stack：  后进先出LIFO（last in first out）
+    :return:
+    """
+    pass
+
+
+class Queue:
+    """
+    实现一个简单的先进先出队列
+    """
+    def __init__(self):
+        self.l = []
+
+    def put(self, num):
+        self.l.append(num)
+
+    def get(self):
+        return self.l.pop(0)
+
+
+class Stack(Queue):
+    """继承队列实现栈"""
+    def get(self):
+        return self.l.pop()
+
+# queue = Queue()
+# queue.put(1)
+# queue.put(2)
+# queue.put(3)
+# queue.put(5)
+# queue.put(4)
+# print(queue.l)
+# print(queue.get())
+# print(queue.get())
+# print(queue.get())
+# stack = Stack()
+# stack.put(1)
+# stack.put(2)
+# stack.put(3)
+# print(stack.get())
+# print(stack.get())
+
+
+class MyPickle:
+    """
+    面向对象实现pickle的dump，load
+    """
+    def __init__(self, path):
+        self.path = path
+        self.bytes = my_bytes
+
+    def pickle_dump(self, my_bytes):
+        with open(self.path, mode='ab') as f1:
+            pickle.dump(my_bytes, f1)
+
+    def pickle_load(self):
+        with open(self.path, mode='rb') as f1:
+            while 1:
+                try:
+                    i = pickle.load(f1)
+                    yield i
+                except EOFError:
+                    break
+# my = MyPickle('/Users/hulu/PycharmProjects/studyPython/pickle.txt')
+# my.pickle_dump(b'23wrwwqrwq2412')
+# for i in my.pickle_load():
+#     print(i)
+
+
+class AObj:
+    list = []
+
+    def __init__(self):
+        self.list = []
+
+    def func(self):
+        self.list.append(1)
+
+
+class BObj(AObj):
+    def __init__(self):
+        self.list = []
+
+    def func(self):
+        self.list.append(2)
+# a = AObj()
+# b = BObj()
+# a.func()
+# b.func()
+# print(a.list)
+# print(b.list)
+# print(AObj.list)
+# print(BObj.list)
+
+
+class A2:
+    """
+    F（D(B(A)),E(C(A))）,如果F继承D，E，D继承B，E继承C， B，C继承A，那么F在新式类的继承顺序按广度优先，满足c3算法
+    在其他线路上有就不会走，提高效率
+    merge规则；
+    如果一个类出现在从左到右所有顺序的最左侧，并且没有在其他位置出现，那么先提出来作为继承顺序中的一个
+    或一个类出现在从左到右顺序的最左侧，并且没有在其他顺序中出现，那么先提出来作为继承顺序中的一个
+    如果从左到右第一个顺序中的第一个类出现在后面且不是第一个，那么不能提取，顺序向后继续找其他顺序中符合上述条件的类
+    A(O) = [AO]    A继承Obj
+    B(A) = [BAO]   B继承A
+    C(A) = [CAO]
+    D(B) = [DBAO]
+    E(C) = [ECAO]
+    F(D,E)=c3(D(B)+E(C))
+          = F[+]
+         F=[DBAO] + [ECAO]
+        FD=[BAO] + [ECAO]
+       FDB=[AO]  + [ECAO]   A出现在后面，会走重复的操作，所以提E
+      FDBE=[AO]  + [CAO]
+     FDBEC=[AO]  + [AO]
+    FDBECA=[O]   +[O]
+    FDBECAO   可以使用此方法D2.mro()核对
+
+
+    """
+    def func(self):
+        print('in a')
+
+class B2(A2):
+    def func(self):
+        print('in B')
+
+class C2(A2):
+    pass
+
+class D2(B2, C2):
+    pass
+
+print(D2.mro())  # 查看D继承的顺序
+
+
+
+
+
+
 
 
 
