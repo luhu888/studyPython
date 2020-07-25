@@ -2754,24 +2754,314 @@ class C2(A2):
 class D2(B2, C2):
     pass
 
-print(D2.mro())  # 查看D继承的顺序
+# -------------------------------------------------------
+# print(D2.mro())  # 查看D继承的顺序
 
 
+# class Payment:
+#     """
+#     抽象类
+#     raise 主动抛出异常，如果子类没有重写pay方法就主动抛出异常
+#     这个类也叫规范类，不实现功能，只为规范之后的同类型方法
+#     """
+#     def pay(self, price):
+#         raise NotImplementedError('请重写pay的同名方法')
+# -------------------------------------------------------
 
 
+from abc import abstractmethod, ABCMeta
 
 
+class Payment(metaclass=ABCMeta):
+    """
+    实现抽象类的另一种方式，只要不重写pay方法，实例化就会失败报错
+    """
+    @abstractmethod
+    def pay(self, price):
+        print('请重写该同名方法')
 
 
+class weChat(Payment):
+    def __init__(self, name):
+        self.name = name
+
+    def pay(self, price):
+        dic = {'name': self.name, 'price': price}
+        # 调用微信支付的链接
+        print('%s通过微信支付了¥%s' % (self.name, price))
 
 
+class AliPay(Payment):
+    def __init__(self, name):
+        self.name = name
+
+    def fuqian(self, num):
+        dic = {'name': self.name, 'price': num}
+        # 调用ali支付链接
+        print('%s通过AliPay支付了¥%s' % (self.name, num))
 
 
+def pay(name, price, kind):
+    """
+    归一化处理，方便对接的同事调用
+    或者通过反射优化代码，使得每次不用修改代码，即可完成其他支付类型的归一化处理
+    :param name:
+    :param price:
+    :param kind:
+    :return:
+    """
+    # if kind == 'weChat':
+    #     wx = weChat(name)
+    #     wx.pay(price)
+    # elif kind == 'AliPay':
+    #     ali = AliPay(name)
+    #     ali.pay(price)
+    class_name = getattr(sys.modules['__main__'], kind)
+    obj = class_name(name)
+    obj.pay(price)
+# pay('luhu', 200, 'weChat')
+# pay('haha', 300, 'AliPay')
 
 
+def len(obj=range(1, 11)):
+    """
+    多态： 一个类型表现出来的多种状态，比如支付中表现出的苹果支付和微信支付两种状态
+    在Java中：一个参数必须指定类型
+    所以如果想让两个类型的对象都可以传，那么必须让两个类继承自一个父类，在指定类型的时候用父类来指定 def pay(Payment a, int b)
+    但在python中不需要指定类型，所以python中处处是多态，
+    鸭子类型： 长得像鸭子的就叫鸭子类型
+    所有实现了__len__ 方法的类，在调用len函数的时候，obj都说是鸭子类型
+    比如 类里面__dir__中只要有__iter__,__next__ 的就是迭代器
+
+    """
+    return obj.__len__()
 
 
+class A3:
+    """
+    多继承中super()按照广度mro来寻找func方法
+    在单继承中，super()就是调用父类中的方法
+    """
+    def func(self):
+        print("A")
 
+
+class B3(A3):
+    def func(self):
+        super().func()
+        print('B')
+
+
+class C3(A3):
+    def func(self):
+        super().func()
+        print('C')
+
+
+class D3(B3, C3):
+    def func(self):
+        super().func()
+        print('D')
+# d = D3()
+# print(D3.mro())
+# d.func()
+
+
+class User:
+    """
+    在单继承中用super()表示父类中的同名方法
+    """
+    def __init__(self, name):
+        self.name = name
+
+
+class VIPUser(User):
+    def __init__(self, name, level):
+        # User.__init__(self, name)   # 不推荐
+        # super(VIPUser, self).__init__(name)
+        super().__init__(name)  # 推荐
+        self.level = level
+# lu = VIPUser('luhu', 12)
+# print(lu.__dict__)
+# print(lu.__dir__())
+
+
+class UserInfo:
+    """
+    封装：把属性或方法装起来
+    广义上：把属性和方法装起来，外面不能直接调用，要通过类名来调用
+    狭义上：把属性和方法隐藏起来，外面不能调用，只能内部使用
+    """
+    def __init__(self, name, password):
+        self.name = name
+        self.__password = password   # 加上双下划线就变成私有的
+
+    def get_password(self):
+        return self.__password
+# info = UserInfo('luhu', 123456)
+# print(info.get_password())   # 只能看不能改值
+# print(info.password)  # 报错，看不到了
+
+
+class Foo2:
+    """
+    私有方法和属性不能被子类使用
+    """
+    def __init__(self):
+        self.__func()
+
+    def __func(self):
+        print('in foo')
+
+
+class Son2(Foo2):
+    # def __init__(self):
+    #     self.__func()
+
+    def __func(self):
+        print('in son')
+# Son2()
+
+
+class MyProperty:
+    def __init__(self, r):
+        self.r = r
+
+    @property
+    def square(self):
+        """
+        用property装饰器将方法伪装成属性，
+        :return:
+        """
+        return pi*self.r**2
+# circle = MyProperty(4)
+# print(circle.r)
+# print(circle.square)
+
+
+class Goods:
+    discount = 0.8
+
+    def __init__(self, name, origin_price):
+        """
+        装饰器进阶，属性值的修改
+        :param name:
+        :param origin_price:
+        """
+        self.name = name
+        self.__origin_price = origin_price
+
+    @property
+    def price(self):
+        return self.discount * self.__origin_price
+
+    @price.setter     # 给price加参数，接收一个新的参数替换旧值
+    def price(self, new_price):
+        if isinstance(new_price, int):
+            self.__origin_price = new_price
+
+    @price.deleter  # 删除方法，不常用
+    def price(self):
+        print('zhixing ')
+        del self.__origin_price
+# apple = Goods('apple', 7)
+# print(apple.price)
+# apple.price = 5
+# del apple.price
+# print(apple.price)
+
+
+class Person3:
+    """
+    反射，getattr
+    反射类的静态变量/其他方法
+    反射对象的实例变量/绑定方法
+    反射模块中的所有变量：1被导入的模块，当前执行的py文件-脚本
+    判断模块中是否能反射成功  hasattr
+
+    """
+    Role = 'role'
+
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def func(self):
+        print('aha')
+
+
+# ll = Person3('路虎', 23)
+# ret = getattr(ll, 'name')    # 反射对象的实例变量
+# print(ret)
+# ret2 = getattr(ll, 'func')  # 反射对象绑定的方法
+# print(ret2)    # 返回的是方法对应的地址，加上()即可执行该方法
+# print(getattr(Person3, 'Role'))   # 反射类的静态变量
+# import fanshe
+# print(getattr(fanshe, 'sww'))  # 引用模块中的任意变量
+# print(getattr(fanshe, 'l1'))
+# print(getattr(fanshe, 'd1'))
+# print(hasattr(fanshe, 'd11'))    # 判断模块中是否能反射成功，与getattr一起使用防止报错
+class File:
+    l1 = ['write', 'read', 'remove']
+
+    def write(self):
+        print("in write")
+
+    def read(self):
+        print("in read")
+
+    def remove(self):
+        print("in remove")
+# f = File()
+# print(f.__dir__())
+# i1 = input('请输入操作序号')
+# if int(i1) in range(1, 4):
+#     obj = getattr(f, File.l1[int(i1)-1])   # 反射对象里的方法地址
+#     print(obj)
+#     obj()
+
+
+class Goods1:
+    __discount = 0.5
+    """
+    @classmethod 把一个对象绑定的方法改成类方法
+    在方法中仍然可以引用类中的静态变量
+    可以不用实例化对象，直接用类名在外部调用这个方法
+    什么时候用classmethod
+    1.定义了一个方法，默认传self，但这个self没有使用
+    2.并且你在这个方法里用到了当前的类名，或者准备使用这个类的内存空间中的名字的时候
+    """
+
+    def __init__(self, name, origin_price):
+        self.name = name
+        self.__origin_price = origin_price
+
+    @property
+    def price(self):
+        return self.__origin_price*self.__discount
+
+    @classmethod
+    def change_discount(cls, new_discount):
+        cls.__discount = new_discount
+# Goods1.change_discount(0.3)
+# goods = Goods1('apple', 20)
+# print(goods.price)
+
+
+class User:
+    pass
+    """
+    @staticmethod装饰器，本身就是一个普通的函数，被挪到类的内部执行，那么直接给这个函数添加staticmethod装饰器就可以了
+    什么时候用：在函数内部既不会用到self，也不会用到cls类
+    """
+    @staticmethod
+    def login(a, b):
+        print('登录的逻辑', a, b)
+
+
+User.login('a', 'b')   # 可以通过类名.方法直接调用，也可以和普通方式先实例化一个对象，再调用
+user = User()
+user.login('a', 34)
 
 
 
