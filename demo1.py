@@ -3057,11 +3057,139 @@ class User:
     @staticmethod
     def login(a, b):
         print('登录的逻辑', a, b)
+# User.login('a', 'b')   # 可以通过类名.方法直接调用，也可以和普通方式先实例化一个对象，再调用
+# user = User()
+# user.login('a', 34)
 
 
-User.login('a', 'b')   # 可以通过类名.方法直接调用，也可以和普通方式先实例化一个对象，再调用
-user = User()
-user.login('a', 34)
+class Cls:
+    """
+    __callable__   对象()调用这个类中的__call__方法
+    __len__        len(对象)，需要实现这个类中的__len__方法
+    :return:
+    """
+    def __init__(self, name):
+        self.name = name
+        self.students = []
+
+    def __len__(self):
+        return len(self.students)
+# cc = Cls('class')
+# cc.students.append('luhu')
+# print(len(cc))
+# print(cc.students.__dir__())
+
+
+class New(object):
+
+    def __new__(cls, *args, **kwargs):  # cls表示类自己的对象，不是调用它的对象
+        """
+        先创建对象的空间，有一个类指针指向__new__
+        调用init
+        new可用于单例设计
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        # o = super().__new__(cls)    # 重写父类object中的new方法
+        o = object.__new__(cls)
+        print('in new', o)
+        return o
+
+    def __init__(self):
+        print('in init', self)
+# new = New()
+
+
+class Baby:
+    """
+    利用__new__实现的单例设计模式
+    这个类被调用的时候只会创建一个实例
+    更简单的单例模式，把它当作模块导入，使用其中的方法都是单例
+    """
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = object.__new__(cls)
+        return cls.__instance
+
+    def __init__(self, cloth, pants):
+        self.cloth = cloth
+        self.pants = pants
+
+
+b1 = Baby('ff', 'tt')
+b2 = Baby('qq', 'zz')
+
+# print(b1.cloth)
+# print(b2.cloth)
+
+
+class MyCourse:
+    """
+    __str__    __repr__
+    在打印一个对象的时候，调用__str__方法
+    在%s拼接一个对象时候，调用__str__方法
+    在str一个对象时候，调用__str__方法
+    当找不到__str__时会去找__repr__,功能是一样的，但在使用%r进行字符串拼接的时候只会去找repr
+    """
+    def __init__(self, name, price, period):
+        self.name = name
+        self.price = price
+        self.period = period
+
+    def __str__(self):
+        return self.name + '\t' + str(self.price) + '\t' + self.period
+# python = MyCourse('python', 200, '6mouth')
+# go = MyCourse('go', 100, '2mouth')
+# linux = MyCourse('linux', 900, '9mouth')
+# lst = [python, go, linux]
+# print(python)
+# print('以下是课程详情%r' % python)
+# str(go)
+# for index, c in enumerate(lst, 1):
+#     print(index, c)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
