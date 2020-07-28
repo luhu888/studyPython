@@ -79,10 +79,10 @@ conn, address = sk.accept()
 可以通过设置边界解决此问题
 """
 send = '1234'
-struct.pack('i', len(send))
-conn.send(send.encode('utf-8'))
-conn.send(b'1234')
-conn.send(b'5555')
+blen = struct.pack('i', len(send.encode('utf-8')))
+conn.send(blen)
+conn.send('1234'.encode('utf-8'))
+conn.send('5555'.encode('utf-8'))
 conn.close()
 
 

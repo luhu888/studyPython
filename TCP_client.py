@@ -74,6 +74,7 @@ sk.connect(('127.0.0.1', 9001))
 print('连接服务器成功')
 lenth = sk.recv(4)   # 接收到的是元组
 lenth1 = struct.unpack('i', lenth)[0]
+print(lenth)
 msg1 = sk.recv(lenth1)
 print('\033[0;31;40m' + msg1.decode('utf-8') + '\033[0m')
 msg2 = sk.recv(1024)
