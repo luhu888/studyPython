@@ -1727,6 +1727,7 @@ def mokuai():
     import xx as x 给模块起别名，简化
     可以通过__all__控制from xx import *允许调用的成员,详见my_package.py
 
+
     :return:
     """
     pass
@@ -3150,10 +3151,6 @@ class MyCourse:
 # str(go)
 # for index, c in enumerate(lst, 1):
 #     print(index, c)
-
-
-
-
 
 
 
