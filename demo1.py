@@ -315,7 +315,7 @@ def my_for1():
     print(sum)
 
 
-def is_palindrome():
+def is_palindrome():   # 判断是不是水仙花数
     str = '1上海自来水来自海上1'
     str1 = str[-1::-1]
     if str == str1:

@@ -1,3 +1,4 @@
+import json
 import socket
 import struct
 from time import sleep
@@ -63,27 +64,56 @@ from time import sleep
 #         print(msg.decode('utf-8'))
 #     conn.close()
 
+#
+# sk = socket.socket()
+# sk.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+# sk.bind(('127.0.0.1', 9001))
+# sk.listen()
+# print('服务启动成功')
+# conn, address = sk.accept()
+# # sleep(0.1)
+# """
+# 连续发两条消息，有一定几率会出现粘包现象
+# 只会发生在tcp协议中，因为tcp协议多条消息之间没有边界，且有一堆优化的代码
+# 发送端：两条消息都很短，发送的间隔时间也很短
+# 接收端：多条消息由于没有及时接收，而在接收方的缓存短，堆在一起导致的粘包
+# 可以通过设置边界解决此问题
+# """
+# send = '1234'
+# blen = struct.pack('i', len(send.encode('utf-8')))
+# conn.send(blen)
+# conn.send('1234'.encode('utf-8'))
+# conn.send('5555'.encode('utf-8'))
+# conn.close()
+
 
 sk = socket.socket()
-sk.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 sk.bind(('127.0.0.1', 9001))
+sk.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 sk.listen()
-print('服务启动成功')
 conn, address = sk.accept()
-# sleep(0.1)
-"""
-连续发两条消息，有一定几率会出现粘包现象 
-只会发生在tcp协议中，因为tcp协议多条消息之间没有边界，且有一堆优化的代码
-发送端：两条消息都很短，发送的间隔时间也很短
-接收端：多条消息由于没有及时接收，而在接收方的缓存短，堆在一起导致的粘包
-可以通过设置边界解决此问题
-"""
-send = '1234'
-blen = struct.pack('i', len(send.encode('utf-8')))
-conn.send(blen)
-conn.send('1234'.encode('utf-8'))
-conn.send('5555'.encode('utf-8'))
+str = conn.recv(1024).decode('utf-8')
+str1 = json.loads(str)
+print(str)
+with open('copy.md', mode='wb') as f:
+    msg = conn.recv(str1['file_size'])
+    f.write(msg)
+
 conn.close()
+sk.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

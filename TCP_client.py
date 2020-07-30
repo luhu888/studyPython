@@ -1,3 +1,5 @@
+import json
+import os
 import socket
 import struct
 
@@ -69,25 +71,31 @@ s.makefile()        创建一个与该套接字相关的文件
 #
 # sk.close()
 
+# sk = socket.socket()
+# sk.connect(('127.0.0.1', 9001))
+# print('连接服务器成功')
+# lenth = sk.recv(4)   # 接收到的是元组
+# lenth1 = struct.unpack('i', lenth)[0]
+# print(lenth)
+# msg1 = sk.recv(lenth1)
+# print('\033[0;31;40m' + msg1.decode('utf-8') + '\033[0m')
+# msg2 = sk.recv(1024)
+# print(msg2.decode('utf-8'))
+# sk.close()
+
+
+abs_path = '/Users/hulu/PycharmProjects/studyPython/study.md'
 sk = socket.socket()
 sk.connect(('127.0.0.1', 9001))
-print('连接服务器成功')
-lenth = sk.recv(4)   # 接收到的是元组
-lenth1 = struct.unpack('i', lenth)[0]
-print(lenth)
-msg1 = sk.recv(lenth1)
-print('\033[0;31;40m' + msg1.decode('utf-8') + '\033[0m')
-msg2 = sk.recv(1024)
-print(msg2.decode('utf-8'))
+file_name = os.path.dirname(abs_path)
+file_size = os.path.getsize(abs_path)
+msg = {'file_name': file_name, 'file_size': file_size}
+send = json.dumps(msg)
+sk.send(send.encode('utf-8'))
+with open(abs_path, mode='rb') as f:
+    msg1 = f.read()
+    sk.send(msg1)
 sk.close()
-
-
-
-
-
-
-
-
 
 
 
