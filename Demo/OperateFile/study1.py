@@ -1,7 +1,7 @@
 import os
 
 #
-# def operate_file(path, old_content, new_content):
+# def OperateFile(path, old_content, new_content):
 #     with open(path) as f1, \
 #             open(path+'.bak', mode='w') as f2:
 #         for line in f1:
@@ -11,7 +11,7 @@ import os
 #         os.rename(path+'.bak', path)
 #
 #
-# operate_file('test.txt', 'luhu', 'LUHU')
+# OperateFile('test.txt', 'luhu', 'LUHU')
 print('\d\t')
 
 

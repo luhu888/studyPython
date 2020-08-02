@@ -84,21 +84,28 @@ s.makefile()        创建一个与该套接字相关的文件
 # sk.close()
 
 
-abs_path = '/Users/hulu/PycharmProjects/studyPython/study.md'
+# abs_path = '/Users/hulu/PycharmProjects/studyPython/study.md'
+# sk = socket.socket()
+# sk.connect(('127.0.0.1', 9001))
+# file_name = os.path.dirname(abs_path)
+# file_size = os.path.getsize(abs_path)
+# msg = {'file_name': file_name, 'file_size': file_size}
+# send = json.dumps(msg)
+# sk.send(send.encode('utf-8'))
+# with open(abs_path, mode='rb') as f:
+#     msg1 = f.read()
+#     sk.send(msg1)
+# sk.close()
+
+
+import socket
+
 sk = socket.socket()
-sk.connect(('127.0.0.1', 9001))
-file_name = os.path.dirname(abs_path)
-file_size = os.path.getsize(abs_path)
-msg = {'file_name': file_name, 'file_size': file_size}
-send = json.dumps(msg)
-sk.send(send.encode('utf-8'))
-with open(abs_path, mode='rb') as f:
-    msg1 = f.read()
-    sk.send(msg1)
-sk.close()
-
-
-
+sk.connect(('127.0.0.1', 9002))
+while 1:
+    sk.send(b'hello')
+    content = sk.recv(1024).decode('utf-8')
+    print(content)
 
 
 

@@ -13,6 +13,7 @@ from collections import namedtuple, defaultdict, Counter
 from functools import reduce
 from logging import handlers
 from math import pi
+from multiprocessing import Process, Lock
 
 flag = True
 """
@@ -1698,8 +1699,8 @@ def zhuangshiqi3(name, age):
 
 # -------------------------------------------------------------------------------------------#
 import sys
-# sys.path.append(r'/Users/hulu/PycharmProjects/studyPython/testpath')  # 添加绝对路径
-sys.path.append(os.path.dirname(__file__)+'/testpath')
+# sys.path.append(r'/Users/hulu/PycharmProjects/studyPython/TestPath')  # 添加绝对路径
+sys.path.append(os.path.dirname(__file__)+'/TestPath')
 """
 通过相对路径添加自定义模块路径,目的是隐藏文件结构
 """
@@ -1736,7 +1737,7 @@ def mokuai():
     # print(age1, pac_func2())
 
 # # 将项目所在的父目录导入即可,xx项目的父目录是testpath
-# sys.path.append(os.path.dirname(__file__)+'/testpath')
+# sys.path.append(os.path.dirname(__file__)+'/TestPath')
 # from xx.z import zz
 # print(zz.z_f())
 # # print(zz.yy.y_f())   # 不想对外界暴露文件结构(yy模块)在zz.py引用时可以使用from ..y.yy import *，通过zz.y_f()调用
@@ -1835,7 +1836,7 @@ def my_sys():
     :return:
     """
     # return int(sys.argv[1]) + int(sys.argv[2])
-    # python demo1.py 1 3  命令行执行
+    # python studyPython.py 1 3  命令行执行
     print(sys.modules)
 
 
@@ -1871,7 +1872,7 @@ def my_json():
         f3.write(json.dumps([1, 4, 6, 8, 99, 0])+'\n')
         f3.write(json.dumps([1, 3, 6, 11, 99, 22])+'\n')
 
-    with open('json.txt', mode='rt', encoding='utf-8') as f4:
+    with open('/Users/hulu/PycharmProjects/studyPython/tmp/json.txt', mode='rt', encoding='utf-8') as f4:
         for line in f4:
             print(json.loads(line.strip()))
 
@@ -1962,7 +1963,7 @@ def my_module1():
 def my_re():
     """
     正则表达式
-
+    元字符
     []  一个中括号只表示一个字符位置
     [abc] 匹配a或b或c
     [0-9a-zA-z]  按照asc码表进行的范围比对，匹配一个字符在0-9，a-z，A-Z之中的一个字符
@@ -3153,35 +3154,146 @@ class MyCourse:
 #     print(index, c)
 
 
+def my_multiprocessing(name):
+    """
+    进程：进行中的程序就是一个进程，占用资源，需要操作系统调度，pid：能够唯一标识一个进程，但不是永久不变的，启动后结束前是固定的
+    进程是计算机中最小的资源分配单位
+    并发：多个程序同时执行：只有一个cpu，多个程序在一个CPU上执行
+    宏观上多个程序同时执行
+    微观上多个程序轮流在一个cpu上执行，本质还是串行
+    并行：多个程序同时执行，并且在多个cpu上执行
+    同步：在做A事的时候发起B事件，必须等待B事件结束之后才能继续做A事
+    异步：在做A事的时候发起B事件，不需要等待B事件结束就可以继续A事件
+    阻塞：cpu不工作了就叫阻塞，input，sleep
+    非阻塞：cpu在工作就是非阻塞
+    线程：线程是进程的一个单位，不能脱离进程存在
+    线程事计算机中能够被cpu调度的最小单位
+    同步阻塞：input，recv，accept
+    进程的调度算法：给所有的进程分配资源或者分配cpu使用权的一种方法
+    短作业优先，
+    先来先服务，FIFS
+    多级反馈算法：
+    对个任务队列，优先级从高到低
+    新来的任务总是优先级最高的
+    每一个新任务几乎会立即获得一个时间片时间
+    执行完一个时间片之后会降到下一级队列中
+    总是优先级最高的任务都执行完才执行优先级低的队列
+    并且优先级越高时间片越短
+    多进程间的数据是隔离的
+    :return:
+    """
+    print('进程id:', os.getpid(), '父进程id:', os.getppid(), name)   # 进程id和父进程id
+    time.sleep(random.random())
+    print('执行完毕')
 
 
+# if __name__ == '__main__':  # Mac上不用这句，windows必须要，否则会报错
+#     my_multiprocessing('hh')   # 父进程
+#     p = Process(target=my_multiprocessing, args=('luhu',))  # 子进程可以传递参数，但必须以元组的方式传递，但是不能获取子进程的返回值
+#     p.start()    # 开启一个子进程
+#     p.join()   # 同步阻塞，直到p这个子进程执行完毕才继续执行后面代码
+#     print('程序结束')
+# if __name__ == '__main__':
+#     arg_lst = [('zz',), ('aa',), ('cc',)]
+#     p_lst = []
+#     for i in arg_lst:
+#         p = Process(target=my_multiprocessing, args=i)
+#         p.start()
+#         p_lst.append(p)
+#         for j in p_lst:
+#             j.join()
+# print('多进程执行完毕')
 
 
+n = 0
 
 
+def func():
+    """
+    多进程间的数据是隔离的
+    :return:
+    """
+    global n
+    n += 1
+#
+#
+# p_lst = []
+# for i in range(100):
+#     p = Process(target=func)
+#     p.start()
+#     p_lst.append(p)
+#     for p in p_lst:
+#         p.join()
+#         print(n)
+#
+# print(n)
 
 
+class MyProcess(Process):
+    """
+    开启进程的另一种方式，面向对象的方式
+    """
+    def __init__(self, a, b, c):
+        self.a = a
+        self.b = b
+        self.c = c
+        super().__init__()
+
+    def run(self):
+        time.sleep(2)
+        print(os.getppid(), os.getpid(), self.a, self.b, self.c)
+# if __name__ == '__main__':
+#     p = MyProcess(1, 2, 3)
+#     p.start()
+#     print(p.name)
+#     print(p.is_alive())
+#     p.terminate()  # 结束子进程，但不会立即结束，得等到系统响应,异步非阻塞
+#     sleep(1)
+#     print(p.is_alive())  # 查看进程是否活着
 
 
+def shouhu_process():
+    """
+    主进程会等待所有的子进程结束，回收资源
+    守护进程会等待主进程代码执行结束之后再结束,而不是整个主进程结束，和其他子进程结束无关
+    :return:
+    """
+    while 1:
+        print('in shouhu_process')
+        time.sleep(1)
 
 
+def shouhu_process2():
+    for i in range(10):
+        print('in shouhu_process2' + str(i))
+        time.sleep(1)
+# if __name__ == '__main__':
+#     p1 = Process(target=shouhu_process)
+#     print(p1.name)
+#     p1.daemon = True   # 开启守护进程
+#     p2 = Process(target=shouhu_process2)
+#     print(p2.name)
+#     p1.start()
+#     p2.start()
+#     time.sleep(5)
+#     p2.join()
 
 
+def lock_func(i, lock):
+    # lock.acquire() # 拿钥匙
+    # print('被锁起来的功能%s' % i)
+    # time.sleep(1)
+    # lock.release()  # 还钥匙
+    with lock:   # 这样写法更简单
+        print('被锁起来的功能%s' % i)
+        time.sleep(1)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+if __name__ == '__main__':
+    lock = Lock()   # 互斥锁
+    for i in range(10):
+        p = Process(target=lock_func, args=(i, lock))
+        p.start()
 
 
 

@@ -1,1 +1,0 @@
-from glance import api

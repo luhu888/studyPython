@@ -8,6 +8,6 @@ def sww():
 
 
 l1 = [1, 2, 4, 5]
-d1 = {'key' : "luhu", 'key2' : 12}
+d1 = {'key': "luhu", 'key2' : 12}
 
 

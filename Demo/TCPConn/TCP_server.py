@@ -1,6 +1,8 @@
 import json
+import os
 import socket
 import struct
+from multiprocessing import Process
 from time import sleep
 
 """
@@ -86,29 +88,43 @@ from time import sleep
 # conn.send('5555'.encode('utf-8'))
 # conn.close()
 
-
-sk = socket.socket()
-sk.bind(('127.0.0.1', 9001))
-sk.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-sk.listen()
-conn, address = sk.accept()
-str = conn.recv(1024).decode('utf-8')
-str1 = json.loads(str)
-print(str)
-with open('copy.md', mode='wb') as f:
-    msg = conn.recv(str1['file_size'])
-    f.write(msg)
-
-conn.close()
-sk.close()
-
-
+#
+# sk = socket.socket()
+# sk.bind(('127.0.0.1', 9001))
+# sk.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+# sk.listen()
+# conn, address = sk.accept()
+# str = conn.recv(1024).decode('utf-8')
+# str1 = json.loads(str)
+# print(str)
+# with open('copy.md', mode='wb') as f:
+#     msg = conn.recv(str1['file_size'])
+#     f.write(msg)
+#
+# conn.close()
+# sk.close()
 
 
+def talk(conn):
+    """
+    开启多进程server
+    :param conn:
+    :return:
+    """
+    msg = conn.recv(1024).decode('utf-8')
+    ret = msg.encode('utf-8')
+    conn.send(ret)
 
 
-
-
+if __name__ == '__main__':
+    sk = socket.socket()
+    sk.bind(('127.0.0.1', 9001))
+    sk.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sk.listen()
+    while 1:
+        conn, address = sk.accept()
+        p = Process(target=talk, args=(conn,))
+        p.start()
 
 
 
