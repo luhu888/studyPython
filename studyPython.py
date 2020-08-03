@@ -13,7 +13,9 @@ from collections import namedtuple, defaultdict, Counter
 from functools import reduce
 from logging import handlers
 from math import pi
-from multiprocessing import Process, Lock
+from multiprocessing import Process, Lock, Queue
+
+import requests
 
 flag = True
 """
@@ -2629,7 +2631,7 @@ def my_data():
     pass
 
 
-class Queue:
+class Queue1:
     """
     实现一个简单的先进先出队列
     """
@@ -2643,7 +2645,7 @@ class Queue:
         return self.l.pop(0)
 
 
-class Stack(Queue):
+class Stack(Queue1):
     """继承队列实现栈"""
     def get(self):
         return self.l.pop()
@@ -3287,13 +3289,71 @@ def lock_func(i, lock):
     with lock:   # 这样写法更简单
         print('被锁起来的功能%s' % i)
         time.sleep(1)
+# if __name__ == '__main__':
+#     lock = Lock()   # 互斥锁
+#     for i in range(10):
+#         p = Process(target=lock_func, args=(i, lock))
+#         p.start()
+
+
+def consumer(q, name):
+    """
+    生产者消费者模型：分布式操作模块celery用的就是这个，本质就是让生产者和消费者数据的效率达到平衡并且最大化的效率
+    进程间的通信，可以通过multiprocess的queue获取值，先进先出
+    put()   get()
+    一次put，对应一次get，如果直接get，取不到值，进程会阻塞
+    消费者通常取到数据之后还要进行某些操作
+    :return:
+    """
+    while 1:
+        food = q.get()
+        if food:
+            print('%s吃了%s' % (name, food))
+        else:
+            break
+
+
+def producer(q, name, food):
+    """
+    生产者通常放数据之前需要先通过某些代码来获取数据
+    :param q:
+    :return:
+    """
+    for i in range(10):
+        foodi = food + str(i)
+        print('%s生产了%s' % (name, foodi))
+        q.put(foodi)
+        time.sleep(1)
 
 
 if __name__ == '__main__':
-    lock = Lock()   # 互斥锁
-    for i in range(10):
-        p = Process(target=lock_func, args=(i, lock))
-        p.start()
+    q = Queue()
+    p1 = Process(target=consumer, args=(q, 'luhu'))
+    p2 = Process(target=producer, args=(q, 'dachu', 'cake'))
+    p3 = Process(target=consumer, args=(q, '小明'))
+    p1.start()
+    p2.start()
+    p3.start()
+    p2.join()     # 等待生产者生产完再开始吃
+    q.put(None)   # 有几个消费者就要put几次None
+    q.put(None)
+
+
+# ret = requests.get('https://www.baidu.com')
+# print(ret.content.decode('utf-8'))
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
