@@ -13,7 +13,7 @@ from collections import namedtuple, defaultdict, Counter
 from functools import reduce
 from logging import handlers
 from math import pi
-from multiprocessing import Process, Lock, Queue
+from multiprocessing import Process, Lock, Queue, Manager
 
 import requests
 
@@ -3328,37 +3328,80 @@ def producer(q, name, food):
         print('%s生产了%s' % (name, foodi))
         q.put(foodi)
         time.sleep(1)
+# if __name__ == '__main__':
+#     q = Queue()
+#     p1 = Process(target=consumer, args=(q, 'luhu'))
+#     p2 = Process(target=producer, args=(q, 'dachu', 'cake'))
+#     p3 = Process(target=consumer, args=(q, '小明'))
+#     p1.start()
+#     p2.start()
+#     p3.start()
+#     p2.join()     # 等待生产者生产完再开始吃
+#     q.put(None)   # 有几个消费者就要put几次None
+#     q.put(None)
+
+
+url_dict = {'baidu': 'https://www.baidu.com', 'dongman': 'https://k.jinbaodm.com/index.php?m=vod-search',
+            '80s': 'http://80smp4.cc/'}
+
+
+def url_producer(q, name, url):
+    ret = requests.get(url)
+    q.put((name, ret.text))
+
+
+def url_consumer(q):
+    while 1:
+        tup = q.get()
+        if tup is None:
+            break
+        with open('%s.html' % tup[0], mode='w', encoding='utf-8') as f:
+            f.write(tup[1])
+# if __name__ == '__main__':
+#     q = Queue()
+#     l1 = []
+#     for key in url_dict:
+#         p = Process(target=url_producer, args=(q, key, url_dict[key]))
+#         p.start()
+#         l1.append(p)
+#     Process(target=url_consumer, args=(q,)).start()
+#     for i in l1:   # start()方法会异步阻塞，需要循环结束进程，并给序列添加None，结束阻塞
+#         i.join()
+#     q.put(None)
+
+
+def change_dict(d1,lock):
+    """
+    进程间的数据是隔离的，但可以通过Manger类实现数据共享
+    进程间的数据共享，使用Manger类
+    但是进程间的数据是不安全的，需要加锁
+    :param d1:
+    :param lock:
+    :return:
+    """
+    with lock:
+        d1['count'] -= 1
+    time.sleep(0.01)
 
 
 if __name__ == '__main__':
-    q = Queue()
-    p1 = Process(target=consumer, args=(q, 'luhu'))
-    p2 = Process(target=producer, args=(q, 'dachu', 'cake'))
-    p3 = Process(target=consumer, args=(q, '小明'))
-    p1.start()
-    p2.start()
-    p3.start()
-    p2.join()     # 等待生产者生产完再开始吃
-    q.put(None)   # 有几个消费者就要put几次None
-    q.put(None)
-
-
-# ret = requests.get('https://www.baidu.com')
-# print(ret.content.decode('utf-8'))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    m = Manager()
+    lock = Lock()
+    d1 = m.dict({'count': 100})
+    p = []
+    pp = []
+    for i in range(50):
+        p1 = Process(target=change_dict, args=(d1, lock))
+        p2 = Process(target=change_dict, args=(d1, lock))
+        p1.start()
+        p2.start()
+        p.append(p1)
+        pp.append(p2)
+        for j in p:
+            j.join()
+        for k in pp:
+            k.join()
+    print(d1)
 
 
 
