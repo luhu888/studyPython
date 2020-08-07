@@ -14,6 +14,7 @@ from functools import reduce
 from logging import handlers
 from math import pi
 from multiprocessing import Process, Lock, Queue, Manager
+from threading import Thread, current_thread, enumerate, active_count
 
 import requests
 
@@ -3161,6 +3162,7 @@ def my_multiprocessing(name):
     进程：进行中的程序就是一个进程，占用资源，需要操作系统调度，pid：能够唯一标识一个进程，但不是永久不变的，启动后结束前是固定的
     进程是计算机中最小的资源分配单位
     并发：多个程序同时执行：只有一个cpu，多个程序在一个CPU上执行
+    一般情况下我们开启的进程数不会超过CPU个数的两倍
     宏观上多个程序同时执行
     微观上多个程序轮流在一个cpu上执行，本质还是串行
     并行：多个程序同时执行，并且在多个cpu上执行
@@ -3370,7 +3372,7 @@ def url_consumer(q):
 #     q.put(None)
 
 
-def change_dict(d1,lock):
+def change_dict(d1, lock):
     """
     进程间的数据是隔离的，但可以通过Manger类实现数据共享
     进程间的数据共享，使用Manger类
@@ -3382,26 +3384,104 @@ def change_dict(d1,lock):
     with lock:
         d1['count'] -= 1
     time.sleep(0.01)
+# if __name__ == '__main__':
+#     m = Manager()
+#     lock = Lock()
+#     d1 = m.dict({'count': 100})
+#     p = []
+#     # pp = []
+#     for i in range(50):
+#         p1 = Process(target=change_dict, args=(d1, lock))
+#         p2 = Process(target=change_dict, args=(d1, lock))
+#         p1.start()
+#         p2.start()
+#         p.append(p1)
+#         p.append(p2)
+#         for j in p:
+#             j.join()    # start()方法会异步阻塞，需要循环结束进程，并给序列添加None，结束阻塞
+#     print(d1)
 
 
-if __name__ == '__main__':
-    m = Manager()
-    lock = Lock()
-    d1 = m.dict({'count': 100})
-    p = []
-    pp = []
-    for i in range(50):
-        p1 = Process(target=change_dict, args=(d1, lock))
-        p2 = Process(target=change_dict, args=(d1, lock))
-        p1.start()
-        p2.start()
-        p.append(p1)
-        pp.append(p2)
-        for j in p:
-            j.join()
-        for k in pp:
-            k.join()
-    print(d1)
+def my_thread(i):
+    """
+    线程：能被操作系统调度（给CPU执行）的最小单位
+    同一个进程中的多个线程可能同时被CPU执行
+    线程间的数据是共享的，可以利用多核进行多线程，数据不安全，开启关闭切换时间开销小
+    gc 垃圾回收机制 线程     引用计数，分代回收
+    当gc线程检测到变量的应用值为零时，会释放掉该变量的内存
+    在CPython中（绝大多数用的Python解释器都是cpython），为了完成gc的回收机制，对不同线程的引用计数的变化记录得更加精准
+    使用了全局解释器锁GIL global interpreter lock，导致同一个进程中的多个线程只有一个线程真正被CPU执行
+    所以Python中没有真正意义上的多线程并行
+    但是Python中的多线程可以节省io操作的时间，而不是CPU的计算时间，大部分情况下，我们无法规避掉一条进程中所有的io操作
+    一次io操作（读硬盘数据到找到数据），最快平均耗时0.09ms，相当于执行90W条CPU指令，等同于18w条Python代码
+    实际需要计算使用CPU时，才会用GIL锁
+    所有的子线程只能是自己执行完代码之后就关闭
+    enumerate() 列表存储了所有活着的线程，包括主线程
+    :return:
+    """
+    my_thread = current_thread()
+    print('start%s' % i, my_thread.ident)   # 获取当前线程的线程id
+    time.sleep(0.3)
+    print('end%s' % i)
+# if __name__ == '__main__':
+#     t1 = []
+#     for i in range(10):
+#         t = Thread(target=my_thread, args=(i, ))
+#         t.daemon=True  # 当子线程中开启守护线程时，才用join方法来阻塞线程
+#         t.start()
+#         t1.append(t)
+#     print(enumerate(), active_count())    # 所以这里存活的线程有11个
+#     for t in t1:
+#         t.join()
+#     print('所有线程执行完毕')
+
+
+class MyThread(Thread):
+    def __init__(self, a, b):
+        self.a = a
+        self.b = b
+        super().__init__()
+
+    def run(self):
+        print(self.ident)
+# t = MyThread(1, 2)
+# t.start()  # 开启线程，才在线程中执行run方法
+
+
+def thread1():
+    """
+    主线程会等待子线程结束之后才结束，主线程结束进程就会结束，守护线程随着主进程的结束而结束
+    守护线程会在主线程的代码结束之后守护其他子线程，但是守护进程不会在主进程代码结束之后守护其他子进程，这和守护进程和守护线程的原理不一样
+    守护进程需要主进程来回收资源
+    守护线程是随着进程的结束而结束的
+    其他子线程--》主线程结束--》主进程结束--》整个进程中所有的资源都被回收--》守护线程也会被回收
+    :return:
+    """
+    while 1:
+        print('in func1')
+        time.sleep(1)
+
+
+def thread2():
+    for i in range(7):
+        print('in func2')
+        time.sleep(1)
+
+
+t1 = Thread(target=thread1)
+t1.daemon = True
+t1.start()
+t2 = Thread(target=thread2)
+t2.start()
+
+
+
+
+
+
+
+
+
 
 
 
