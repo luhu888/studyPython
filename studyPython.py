@@ -1,10 +1,12 @@
 import copy
 import datetime
+import dis
 import hashlib
 import json
 import logging
 import os
 import pickle
+import queue
 import random
 import re
 import shutil
@@ -13,7 +15,7 @@ from collections import namedtuple, defaultdict, Counter
 from functools import reduce
 from logging import handlers
 from math import pi
-from multiprocessing import Process, Lock, Queue, Manager
+from multiprocessing import Process, Lock, Queue, Manager, RLock
 from threading import Thread, current_thread, enumerate, active_count
 
 import requests
@@ -3466,26 +3468,229 @@ def thread2():
     for i in range(7):
         print('in func2')
         time.sleep(1)
+# t1 = Thread(target=thread1)
+# t1.daemon = True
+# t1.start()
+# t2 = Thread(target=thread2)
+# t2.start()
 
 
-t1 = Thread(target=thread1)
-t1.daemon = True
-t1.start()
-t2 = Thread(target=thread2)
-t2.start()
+n = 0
 
 
+def thread_add(lock):
+    """
+    多线程数据不安全，因为在CPU（+=）中计算好后，GIL锁轮转没来得及返回赋值给n，就走到另一个进程中了
+    +=，if，while判断的计算和赋值是两个操作，会数据不安全
+    pop，append数据安全，列表中的方法或者字典中的方法去操作全局变量
+    在CPU中的执行顺序可参考下面的dis函数
+    :return:
+    """
+    for i in range(200000):
+        global n
+        with lock:
+            n -= 1
 
 
+def thread_sub(lock):
+    """
+    通过加线程锁保证线程间数据安全
+    :param lock:
+    :return:
+    """
+    for i in range(200000):
+        global n
+        with lock:
+            n += 1
+# t_1 = []
+# if __name__ == '__main__':
+#     for i in range(2):
+#         lock = Lock()
+#         t1 = Thread(target=thread_add, args=(lock,))
+#         t2 = Thread(target=thread_sub, args=(lock,))
+#         t1.start()
+#         t2.start()
+#         t_1.append(t1)
+#         t_1.append(t2)
+#     for t in t_1:
+#         t.join()
+#     print(n)
+
+a = 0
 
 
+def dis_func():
+    """
+    dis 模块将代码转化成CPU指令
+    3518       0 LOAD_GLOBAL              0 (a)
+               2 LOAD_CONST               1 (1)
+               4 INPLACE_ADD
+               6 STORE_GLOBAL             0 (a)
+               8 LOAD_CONST               2 (None)
+              10 RETURN_VALUE
+
+    :return:
+    """
+    global a
+    a += 1
+# dis.dis(dis_func)
+
+# ----------------------------------------------------------------------------------- #
 
 
+class ThreadSafe:
+    """
+    线程安全的单例模式
+    """
+    __instance = None
+    lock = Lock()
+
+    def __new__(cls, *args, **kwargs):
+        with cls.lock:
+            if not cls.__instance:   # 此步不加锁多线程会有一定几率出现不是单例模式
+                time.sleep(0.0001)
+                cls.__instance = super().__new__(cls)
+            return cls.__instance
 
 
+def func_safe():
+    safe = ThreadSafe()
+    print(safe)
+# for i in range(10):
+#     Thread(target=func_safe).start()
+
+# ----------------------------------------------------------------------------------- #
 
 
+def recursive_lock(i, lock):
+    """
+    互斥锁Lock
+    递归锁RLock,与互斥锁不同的是可以多次acquire()，release(),但是acquire多少次就要release多少次
+    递归锁相对效率低，互斥锁效率高，一般很少用递归锁，递归锁常用作出现死锁的快速解决办法
+    :return:
+    """
+    lock.acquire()
+    lock.acquire()
+    print(i)
+    time.sleep(0.001)
+    lock.release()
+    # lock.release()
+    print(i, 'end')
+# r_lock = RLock()
+# for i in range(5):
+#     Thread(target=recursive_lock, args=(i, r_lock)).start()
 
 
+# ----------------------------------------------------------------------------------- #
+# fork_lock = RLock()
+# noodle_lock = RLock()  # 死锁
+fork_lock = noodle_lock = RLock()    # 死锁的临时解决办法
+
+
+def lock_eat1(name):
+    fork_lock.acquire()
+    print('%s拿到了叉子' % name)
+    noodle_lock.acquire()
+    print('%s拿到了面条' % name)
+    print('%s吃面' % name)
+    time.sleep(0.2)
+    fork_lock.release()
+    print('%s放下了叉子' % name)
+    noodle_lock.release()
+    print('%s放下了面' % name)
+
+
+def lock_eat2(name):
+    noodle_lock.acquire()
+    print('%s拿到了面' % name)
+    fork_lock.acquire()
+    print('%s拿到了叉子' % name)
+    print('%s吃面' % name)
+    time.sleep(0.2)
+    noodle_lock.release()
+    print('%s放下了面' % name)
+    fork_lock.release()
+    print('%s放下了叉子' % name)
+
+"""
+出现死锁，同时两个线程，一个拿到面，一个拿到叉子，没有释放锁，导致死锁
+"""
+# Thread(target=lock_eat1, args=('Jane', )).start()
+# Thread(target=lock_eat2, args=('xiaoming', )).start()
+# Thread(target=lock_eat1, args=('li', )).start()
+# Thread(target=lock_eat2, args=('wang', )).start()
+
+# ----------------------------------------------------------------------------------- #
+
+
+def my_queue(i):
+    """
+    队列 先进先出
+    栈   后进先出
+    get_nowait() 队列的非阻塞方法，即使队列里没值也不会阻塞等下去，但是会主动抛出异常，需做异常处理
+    :param i:
+    :return:
+    """
+    q = queue.Queue(i)
+    for i in range(i):
+        q.put(i)
+    print('%sdone' % i)
+    try:
+        q.get_nowait()
+    except queue.Empty:
+        pass
+# my_queue(4)
+
+
+def my_lifo_queue(i):
+    """
+    LifoQueue()   后进先出的栈（用队列实现的栈）
+    :param i:
+    :return:
+    """
+    q = queue.LifoQueue()
+    for j in range(i):
+        q.put(j)
+    for y in range(i):
+        print(q.get())
+# my_lifo_queue(5)
+
+
+def my_priority_queue():
+    """
+    优先级队列，按序号大小优先出来
+    :return:
+    """
+    priq = queue.PriorityQueue()
+    priq.put((2, 'luhu'))
+    priq.put((1, 'li'))
+    priq.put((4, 'wang'))
+    print(priq.get())
+    print(priq.get())
+    print(priq.get())
+# my_priority_queue()
+
+
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
+
+
+def my_pool_func(i):
+    """
+    线程池
+    进程池
+    :return:
+    """
+    print(current_thread().ident, i)
+    time.sleep(0.3)
+    return i**2
+# if __name__ == '__main__':
+#     # t = ThreadPoolExecutor(4)   # 实例化线程池，要开启的线程数量
+#     # for i in range(10):
+#     #     ret = t.submit(my_pool_func(i))
+#     #     print(ret)
+#     p = ProcessPoolExecutor(4)
+#     for i in range(10):
+#         ret = p.submit(my_pool_func(i))
+#         print(ret)
 
 
