@@ -75,6 +75,14 @@ insert into my_yueshu (name,age,num2)values ('li',12,3);
 drop table my_yueshu;
 show create table my_yueshu;
 select * from my_yueshu;
+show create table my_yueshu;
+create table my_int2(id int, name char(18));
+insert into my_int2 values(1,'wang'),(2,'li'),(3,'cai');
+select * from my_int;
+insert into my_int (age) select age from my_int2;
+alter table my_int2 add age int;
+update my_int2 set age=31 where id=3;
+
 
 create table lianhe_unique(ip char(20),port int, name char(18), unique(ip,port));
 insert into lianhe_unique values('192.168.1.101',3306,'mysql');
@@ -198,16 +206,414 @@ select * from employee where emp_name regexp '^j';
 select * from employee where hire_date regexp '^20[0-2]';
 
 
+# 分组 group by   聚合函数 count max min avga(平均值) sum
+select sex,count(sex) from employee group by sex;   # 统计男女员工的人数
+select post, GROUP_CONCAT(emp_name) from employee group by post;  # 会把职业相同的人名字聚合在一起显示
+select post, count(post) from employee group by post;
+select post, avg(salary) from employee group by post;
 
 
+# 过滤语句  having 在having条件中可以使用聚合函数，在where中不行
+# 适合去筛选符合条件的某一组数据，而不是某一行数据
+# 先分组再过滤：求平均值大于xx的部门，求人数大于xx的性别
+select post, count(id) from employee group by post having count(id)>3;
+
+# 排序 order by （desc）降序排    asc 升序排
+select * from employee order by age,salary desc;   # 按年龄从小到大排,年龄相同的按工资从大到小排
+
+# limit m,n 从m+1项取n项，不写m默认从0开始，等同于limit n offset m
+select * from employee limit 1;
+select * from employee limit 2,4;
+select * from employee limit 4 offset 2;
+
+# 查表关键字执行的顺序
+# select5 字段5 from 表1
+      # where2 条件 根据条件筛选符合条件的行，where 条件中不能使用select的别名，因为别名select是在where之后执行的
+      # group by3 分组
+      # having4 过滤条件 根据分组之后的内容进行组的过滤，条件可以使用别名，是因为MySQL做了优化
+      # order by6 排序
+      # limit m,n 7取从m+1开始的前n条
+
+create database join_search default charset utf8;
+# 多表连接查询
+use join_search;
+create table department(
+id int,
+name varchar(20)
+);
+
+create table employee(
+id int primary key auto_increment,
+name varchar(20),
+sex enum('male','female') not null default 'male',
+age int,
+dep_id int
+);
+
+insert into department values
+(200,'技术'),
+(201,'人力资源'),
+(202,'销售'),
+(203,'运营');
+
+insert into employee(name,sex,age,dep_id) values
+('egon','male',18,200),
+('alex','female',48,201),
+('wupeiqi','male',38,201),
+('yuanhao','female',28,202),
+('liwenzhou','male',18,200),
+('jingliyang','female',18,204);
+
+use join_search;
+select * from department,employee where department.id=employee.dep_id;
+# 内连接 inner join ... on ...
+# select 列 from 表1 inner join 表2 on 条件
+select * from department as t1 inner join employee as t2 on t1.id=t2.dep_id;
+
+# 外连接
+  # 左外连接:以左边的表为主，右边表没有关联的数据也会显示出来
+    # left join ... on ...
+  # 右外连接:以右边的表为主，左边表没有关联的数据也会显示出来
+    # right join ... on ...
+  # 全外连接 mysql不支持，full join ... on ...
+
+select * from department as t1 left join employee as t2 on t1.id=t2.dep_id;
+
+select * from department as t1 right join employee as t2 on t1.id=t2.dep_id;
+
+select department.name,employee.name from department inner join employee on department.id=200 and department.id=employee.dep_id;
+
+# 找人力资源大于40岁的人
+select department.name,employee.name,employee.age from department inner join join_search.employee on department.id=201 and employee.age>40;
+
+# 找各部门年龄大于25岁的人
+select department.name as bumen,employee.age as age,employee.name as name from department inner join employee on department.id=employee.dep_id and age>25 order by employee.age;
+
+# 求每个部门多少人
+select department.name,count(employee.id) as count from department left join employee on department.id=employee.dep_id group by department.name order by count asc;
+
+# 子查询 in
+# 查询平均年龄是25岁以上的部门名
+select dep_id from employee group by dep_id having avg(age)>25;   # 单表查询平均年龄大于25的部门id
+select name from department where id in(201,202);  # 单表查询部门id对应的部门名称
+# 嵌套进去就是子查询
+select name from department where id in(select dep_id from employee group by dep_id having avg(age)>25);
+
+select name from join_search.employee where dep_id create user 'guest'@'192.168.0.%' identified by '123';
+grant all on databasename.tablename to 'guest'@'192.168.0.%';   # 给用户授权
+# grant select,insert,update,delete,alter;
+grant all on *.* to 'eva'@'%' identified by '123';  # 创建账号并授权
+use test;   #切换数据库
+create database test charset utf8;  # 创建数据库
+show databases;
+
+create table test_table(name char(12),age int);   # 创建表
+desc test_table;     # 查看表结构,但是看不到表的编码，引擎，具体的约束信息也只能看到一部分
+show create table test_table;   # 查看创建表sql语句
+insert into test_table values ('卢虎', 24);
+insert into test_table values ('li', 22), ('wang', 12);
+insert into test_table value ('wa', 11),('ji',2);
+insert into test_table (name) values ('张三');
+select * from test_table;
+update test_table set age=77 where name='luhu';
+delete from test_table where name='卢虎';
+show engines;
+# mysql的存储引擎：
+# 索引：查询的时候使用的一个目录结构
+# MySQL中的数据用各种不同的技术存储在文件（或者内存）中。这些技术中的每一种技术都使用不同的存储机制、
+# 索引技巧、锁定水平并且最终提供广泛的不同的功能和能力。通过选择不同的技术，你能够获得额外的速度或者功能，
+# 从而改善你的应用的整体功能。
+# Innodb存储引擎：数据和索引存储在一起2个文件，数据索引/表结构，数据持久化,支持事务，行级锁，外键
+# Myisam存储引擎：数据和索引不存储在一起，3个文件，数据/索引/表结构，数据持久化
+# Memory存储引擎：数据存储在内存里，1个文件，表结构，数据断电消失
+# 事务：将多个操作变成原子性操作，保证数据的完整性
+# 行级锁，表级锁：为了防止同时修改同一条数据存在的
+# 外键：支持两张表中的数据不能随意添加，删除
+#
+#
+select database();   # 查看当前所在的数据库
+create table my_int(id int, age tinyint unsigned);    # unsigned无符号，tinyint（一个字节）最多表示2的8次方的数
+insert into my_int values (1,255);
+select * from my_int;   # int最多表示10位数，默认有符号
+create table my_float(f1 float(14,10),f2 decimal(50,30));   # 浮点型总共5位数，3位整数，2位小数
+# float只支持5位小数
+insert into my_float values (223.3334353433,4.4467675566489787665);
+select * from my_float;
+# drop table my_float;
+create table my_time(dt datetime not null default current_timestamp on update current_timestamp,y year,d date, t time, ts timestamp);
+# dt 设置默认值可以用于记录每次登陆的时间
+drop table my_time;
+show create table my_time;
+insert into my_time values (now(),now(),now(),now(),now());
+select * from my_time;
+insert into my_time (y, d) values (now(), now());
 
 
+# 字符串类型char varchar,
+# varchar创建表时，必须定义长度
+# char(18) 最多只能表示255个字符，定长存储，节省时间，浪费空间 'luhu'在数据库中存的是'luhu'加14个空格
+# varchar(18) 最多能表示65535个字符，变长存储，节省空间，存取速度慢,'luhu'在数据库中存储的是'luhu4'还存了字符的长度
+create table my_char(c1 char(4),v1 varchar(15),c2 char,v2 varchar(7));
+insert into my_char values ('哈    ','你  好   ', 'h', 'hahah  ');
+select * from my_char;   # char类型后面加空格，数据库查的时候会自动把空格去掉，这是数据库存定长导致的
+# enum 单选行为 set 多选行为
+create table my_set(name char(12), age int, sex enum('male','female'), hobby set('喝酒','抽烟','烫头'));
+insert into my_set values ('小明',22,'male',('喝酒,烫头'));
+select * from my_set;
+drop table my_set;
+# 约束：约束某一个字段
+# 不能为空（not null），不设置严格模式，即使设置了不能为空，也可以存空(set sql_mode='STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION')
+# 无符号(unsigned,只针对数字类型)，
+# 默认值（default），
+# 唯一约束，unique值唯一，但是可以为多个null,联合唯一unique（name，id）两个字段不能同时重复
+# 自增，auto_increment,只对数字有效，自带非空约束，至少是unique约束之后才能使用
+# 主键，第一个被定义为非空+唯一的那一列会成为这张表的主键primary key，一张表只能有一个主键，两种创建方式not null unique，primary key,但是两种一起出现的时候，取声明为主键的那一列为主键
+# 外键 两张表通过外键关联
+#
+#
+create table my_yueshu(num_id int unique auto_increment, num2 int unique,name char(18) not null, age int, sex enum('male','female') default 'male');
+insert into my_yueshu (name,age,num2)values ('li',12,3);
+drop table my_yueshu;
+show create table my_yueshu;
+select * from my_yueshu;
+show create table my_yueshu;
+create table my_int2(id int, name char(18));
+insert into my_int2 values(1,'wang'),(2,'li'),(3,'cai');
+select * from my_int;
+insert into my_int (age) select age from my_int2;
+alter table my_int2 add age int;
+update my_int2 set age=31 where id=3;
 
 
+create table lianhe_unique(ip char(20),port int, name char(18), unique(ip,port));
+insert into lianhe_unique values('192.168.1.101',3306,'mysql');
+insert into lianhe_unique values('192.1 68.1.103',3306,'mysql');
+insert into lianhe_unique values('192.168.1.111',3306,'python');
+select * from lianhe_unique;
+
+create table my_unique_key(id int not null unique, name char(16) primary key ,des char(4));  # 主键是name
+create table my_unique_key2(id int not null unique, name char(16),des char(4));  # 主键是id
+insert into my_unique_key2 values (1201,'luhu','卢虎卢虎');
+insert into my_unique_key2 values (1202,'luhu2','1111');
+select * from my_unique_key;
+desc my_unique_key2;
+
+# 联合主键 primary key(name, id) 两个值不能同时为空，和相等
+create table my_unique_key3(id int, name char(16),des char(4), primary key (id,name));
+insert into my_unique_key3 values (1201,'luhu2','卢虎卢虎');
+insert into my_unique_key3 values (1201,'luhu3','1111');
+insert into my_unique_key3 (name) values ('luhu1'),('luhu2');  # 可以一次写多条数据，使用values
+select * from my_unique_key;
 
 
+# 创建外键，连接两张表
+# foreign key（自己的字段）references 外表(外表字段) 级联操作on update cascade on delete cascade；
+# on update cascade on delete cascade级联操作，当外键被删除或修改时，另一张表的数据跟着删除或修改
+create table class_foreign(class_id int not null  unique auto_increment, name char(16));
+create table student2(name char(16), age int, cid int,foreign key (cid) references class_foreign(class_id) on update cascade on delete cascade);
+insert into class_foreign (name) values ('3班');
+insert into student2 values ('wang',19,2);
+# drop table student;
+select * from student2;
+select * from class_foreign;
 
 
+# 修改表结构 alter table ...
+# 新增字段 add 新增字段 after 已有字段；或first
+# 修改字段 change 旧字段名 新字段名 新数据类型[约束条件]；
+
+alter table student2 add birthday date after age;
+alter table student2 add birthday date first;
+
+
+#表与表之间的关系：一对多，多对一（用一个外键），多对多（创建第三张表，两个外键）
+create table press(name char(18) primary key, type char(16));
+create table author(name char(18) primary key, age int);
+create table book(press char(18), author char(18),foreign key(press) references press(name), foreign key (author) references author(name));
+select * from book;
+
+
+# 删除数据 delete from 不会清空自增字段offset（偏移量）值
+# truncate table 删除，会清空表和自增字段的偏移量，二者都只删除数据，不删除表结构
+delete from student2 where name='li';
+select * from student2;
+
+# 修改 update table set ...
+update student2 set name='lu111',age=44 where name='lu222';
+
+
+# ------------------------------------------------------------------------- #
+# 练习
+create table employee(
+id int not null unique auto_increment,
+emp_name varchar(20) not null,
+sex enum('male','female') not null default 'male', #大部分是男的
+age int(3) unsigned not null default 28,
+hire_date date not null,
+post varchar(50),
+post_comment varchar(100),
+salary double(15,2),
+office int, #一个部门一个屋子
+depart_id int
+);
+
+insert into employee(emp_name,sex,age,hire_date,post,salary,office,depart_id) values
+('egon','male',18,'20170301','老男孩驻沙河办事处外交大使',7300.33,401,1), #以下是教学部
+('alex','male',78,'20150302','teacher',1000000.31,401,1),
+('wupeiqi','male',81,'20130305','teacher',8300,401,1),
+('yuanhao','male',73,'20140701','teacher',3500,401,1),
+('liwenzhou','male',28,'20121101','teacher',2100,401,1),
+('jingliyang','female',18,'20110211','teacher',9000,401,1),
+('jinxin','male',18,'19000301','teacher',30000,401,1),
+('成龙','male',48,'20101111','teacher',10000,401,1),
+
+('歪歪','female',48,'20150311','sale',3000.13,402,2),#以下是销售部门
+('丫丫','female',38,'20101101','sale',2000.35,402,2),
+('丁丁','female',18,'20110312','sale',1000.37,402,2),
+('星星','female',18,'20160513','sale',3000.29,402,2),
+('格格','female',28,'20170127','sale',4000.33,402,2),
+
+('张野','male',28,'20160311','operation',10000.13,403,3), #以下是运营部门
+('程咬金','male',18,'19970312','operation',20000,403,3),
+('程咬银','female',18,'20130311','operation',19000,403,3),
+('程咬铜','male',18,'20150411','operation',18000,403,3),
+('程咬铁','female',18,'20140512','operation',17000,403,3);
+
+# select 单表查询
+select * from employee;
+# 重命名字段
+select emp_name as name from employee;
+# 去重
+select distinct sex, age from employee;
+# 四则运算
+select emp_name,salary*12 as year_salary from employee;
+# 拼接函数
+select concat(id, emp_name) from employee;   # 实际情况可能会把姓和名拼接在一起
+
+
+# where 字句
+# 比较运算符 < > <= >= <>(不等于) !=(不等于)
+# 判断字段值是否为空用is null，is not null
+# 范围  between and
+#      in   in(key1,key2,key3)  等于key的值
+# 模糊匹配  like   %通配符 匹配任意长度的任意内容； _通配符，匹配一个字符长度的任意内容
+#          regexp（正则）
+# 逻辑运算 and, not in, or
+# select后面筛选的是列，where后面筛选的是行
+
+
+select * from employee where emp_name like '程%';
+select * from employee where emp_name regexp '^j';
+select * from employee where hire_date regexp '^20[0-2]';
+
+
+# 分组 group by   聚合函数 count max min avga(平均值) sum
+select sex,count(sex) from employee group by sex;   # 统计男女员工的人数
+select post, GROUP_CONCAT(emp_name) from employee group by post;  # 会把职业相同的人名字聚合在一起显示
+select post, count(post) from employee group by post;
+select post, avg(salary) from employee group by post;
+
+
+# 过滤语句  having 在having条件中可以使用聚合函数，在where中不行
+# 适合去筛选符合条件的某一组数据，而不是某一行数据
+# 先分组再过滤：求平均值大于xx的部门，求人数大于xx的性别
+select post, count(id) from employee group by post having count(id)>3;
+
+# 排序 order by （desc）降序排    asc 升序排
+select * from employee order by age,salary desc;   # 按年龄从小到大排,年龄相同的按工资从大到小排
+
+# limit m,n 从m+1项取n项，不写m默认从0开始，等同于limit n offset m
+select * from employee limit 1;
+select * from employee limit 2,4;
+select * from employee limit 4 offset 2;
+
+# 查表关键字执行的顺序
+# select5 字段5 from 表1
+      # where2 条件 根据条件筛选符合条件的行，where 条件中不能使用select的别名，因为别名select是在where之后执行的
+      # group by3 分组
+      # having4 过滤条件 根据分组之后的内容进行组的过滤，条件可以使用别名，是因为MySQL做了优化
+      # order by6 排序
+      # limit m,n 7取从m+1开始的前n条
+
+create database join_search default charset utf8;
+# 多表连接查询
+use join_search;
+create table department(
+id int,
+name varchar(20)
+);
+
+create table employee(
+id int primary key auto_increment,
+name varchar(20),
+sex enum('male','female') not null default 'male',
+age int,
+dep_id int
+);
+
+insert into department values
+(200,'技术'),
+(201,'人力资源'),
+(202,'销售'),
+(203,'运营');
+
+insert into employee(name,sex,age,dep_id) values
+('egon','male',18,200),
+('alex','female',48,201),
+('wupeiqi','male',38,201),
+('yuanhao','female',28,202),
+('liwenzhou','male',18,200),
+('jingliyang','female',18,204);
+
+use join_search;
+select * from department,employee where department.id=employee.dep_id;
+# 内连接 inner join ... on ...
+# select 列 from 表1 inner join 表2 on 条件
+select * from department as t1 inner join employee as t2 on t1.id=t2.dep_id;
+
+# 外连接
+  # 左外连接:以左边的表为主，右边表没有关联的数据也会显示出来
+    # left join ... on ...
+  # 右外连接:以右边的表为主，左边表没有关联的数据也会显示出来
+    # right join ... on ...
+  # 全外连接 mysql不支持，full join ... on ...
+
+select * from department as t1 left join employee as t2 on t1.id=t2.dep_id;
+
+select * from department as t1 right join employee as t2 on t1.id=t2.dep_id;
+
+select department.name,employee.name from department inner join employee on department.id=200 and department.id=employee.dep_id;
+
+# 找人力资源大于40岁的人
+select department.name,employee.name,employee.age from department inner join join_search.employee on department.id=201 and employee.age>40;
+
+# 找各部门年龄大于25岁的人
+select department.name as bumen,employee.age as age,employee.name as name from department inner join employee on department.id=employee.dep_id and age>25 order by employee.age;
+
+# 求每个部门多少人
+select department.name,count(employee.id) as count from department left join employee on department.id=employee.dep_id group by department.name order by count asc;
+
+# 子查询 in
+# 查询平均年龄是25岁以上的部门名
+select dep_id from employee group by dep_id having avg(age)>25;   # 单表查询平均年龄大于25的部门id
+select name from department where id in(201,202);  # 单表查询部门id对应的部门名称
+# 嵌套进去就是子查询
+select name from department where id in(select dep_id from employee group by dep_id having avg(age)>25);
+
+# 查询技术部门的员工名
+select name from employee where dep_id in (select id from department where name='技术');
+
+# 查询不足一人的部门名
+select distinct dep_id from employee;
+select * from join_search.department where id not in(select distinct dep_id from employee);
+
+# 求大于所有人平均年龄的员工名和年龄
+select avg(age) from employee;
+select name, age from join_search.employee having age>(select avg(age) from employee);
+
+# 找出部门大于部门平均年龄的人
+select avg(age),dep_id from employee group by dep_id;
+select t1.name, t1.age,t1.dep_id,age1 from employee as t1 inner join (select avg(age) as age1,dep_id from employee group by dep_id) as t2 on t1.dep_id=t2.dep_id where t1.age>t2.age1;
 
 
 
