@@ -113,13 +113,14 @@ def talk(conn):
     """
     msg = conn.recv(1024).decode('utf-8')
     ret = msg.encode('utf-8')
-    conn.send(ret)
+    print(msg)
+    conn.send(b'HTTP/1.1 200 ok\r\n\r\n')
 
 
 if __name__ == '__main__':
     sk = socket.socket()
-    sk.bind(('127.0.0.1', 9001))
     sk.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sk.bind(('127.0.0.1', 9002))
     sk.listen()
     while 1:
         conn, address = sk.accept()

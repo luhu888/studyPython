@@ -1,0 +1,52 @@
+/*div{*/
+    /*background-color: cornflowerblue;*/
+    /*height: 15px;*/
+    /*width: 150px;*/
+/*}*/
+/*CSS（Cascading Style Sheet，层叠样式表)定义如何显示HTML元素，给HTML设置样式，让它更加美观
+元素选择器： 标签选择器 id选择器 类选择器
+
+p {color: "red";}   标签选择器可以选中所有的标签元素，比如div，ul，li ，p等等，不管标签藏的多深，都能选中，选中的是所有的，
+
+#i1 {   #号表示id属性，后面的i1表示id属性的值  同一个页面中id不能重复。任何的标签都可以设置id id命名规范 要以字母 可以有数字 下划线 - 大小写严格区分 aa和AA是两个不一样的属性值
+  background-color: red;  #背景色，color:red是字体颜色
+}
+
+.c1 {  .表示class属性，c1表示class的值
+  font-size: 14px;
+}
+p.c1 {  找到所有p标签里面含有class属性的值为c1的p标签，注意他俩之间没有空格昂
+  color: red;   #所谓类：就是class . class与id非常相似 任何的标签都可以加类，但是类是可以重复,属于归类的概念。同一个标签中可以携带多个类，用空格隔开
+}
+
+高级选择器包括：后代选择器  子代选择器  并集选择器   交集选择器
+
+后代选择器：使用空格表示后代选择器。顾名思义，父元素的后代（包括儿子，孙子，重孙子）*/
+/*div a{*/
+    /*color: red;*/
+/*}*/
+/*子代选择器：div儿子这一代的a标签*/
+/*div>a{*/
+    /*color: fuchsia;*/
+/*}*/
+
+/*毗邻标签，紧挨着div的a标签*/
+/*div+a{*/
+    /*color: red;*/
+/*}*/
+
+/*属性选择器,多用于input标签*/
+div[title]{
+    color: aqua;}
+
+/*伪类选择器，主要针对a标签，a:link,a:visited ,a:hover,a:active,input:focus*/
+a:link {
+  color: #FF0000
+}
+
+
+
+
+
+
+

@@ -156,7 +156,7 @@ office int, #一个部门一个屋子
 depart_id int
 );
 
-insert into employee(emp_name,sex,age,hire_date,post,salary,office,depart_id) values
+insert into employee1(emp_name,sex,age,hire_date,post,salary,office,depart_id)values
 ('egon','male',18,'20170301','老男孩驻沙河办事处外交大使',7300.33,401,1), #以下是教学部
 ('alex','male',78,'20150302','teacher',1000000.31,401,1),
 ('wupeiqi','male',81,'20130305','teacher',8300,401,1),
@@ -179,15 +179,15 @@ insert into employee(emp_name,sex,age,hire_date,post,salary,office,depart_id) va
 ('程咬铁','female',18,'20140512','operation',17000,403,3);
 
 # select 单表查询
-select * from employee;
+select * from employee1;
 # 重命名字段
-select emp_name as name from employee;
+select emp_name as name from employee1;
 # 去重
-select distinct sex, age from employee;
+select distinct sex, age from employee1;
 # 四则运算
-select emp_name,salary*12 as year_salary from employee;
+select emp_name,salary*12 as year_salary from employee1;
 # 拼接函数
-select concat(id, emp_name) from employee;   # 实际情况可能会把姓和名拼接在一起
+select concat(id, emp_name) from employee1;   # 实际情况可能会把姓和名拼接在一起
 
 
 # where 字句
@@ -201,30 +201,30 @@ select concat(id, emp_name) from employee;   # 实际情况可能会把姓和名
 # select后面筛选的是列，where后面筛选的是行
 
 
-select * from employee where emp_name like '程%';
-select * from employee where emp_name regexp '^j';
-select * from employee where hire_date regexp '^20[0-2]';
+select * from employee1 where emp_name like '程%';
+select * from employee1 where emp_name regexp '^j';
+select * from employee1 where hire_date regexp '^20[0-2]';
 
 
 # 分组 group by   聚合函数 count max min avga(平均值) sum
-select sex,count(sex) from employee group by sex;   # 统计男女员工的人数
-select post, GROUP_CONCAT(emp_name) from employee group by post;  # 会把职业相同的人名字聚合在一起显示
-select post, count(post) from employee group by post;
-select post, avg(salary) from employee group by post;
+select sex,count(sex) from employee1 group by sex;   # 统计男女员工的人数
+select post, GROUP_CONCAT(emp_name) from employee1 group by post;  # 会把职业相同的人名字聚合在一起显示
+select post, count(post) from employee1 group by post;
+select post, avg(salary) from employee1 group by post;
 
 
 # 过滤语句  having 在having条件中可以使用聚合函数，在where中不行
 # 适合去筛选符合条件的某一组数据，而不是某一行数据
 # 先分组再过滤：求平均值大于xx的部门，求人数大于xx的性别
-select post, count(id) from employee group by post having count(id)>3;
+select post, count(id) from employee1 group by post having count(id)>3;
 
 # 排序 order by （desc）降序排    asc 升序排
-select * from employee order by age,salary desc;   # 按年龄从小到大排,年龄相同的按工资从大到小排
+select * from employee1 order by age,salary desc;   # 按年龄从小到大排,年龄相同的按工资从大到小排
 
 # limit m,n 从m+1项取n项，不写m默认从0开始，等同于limit n offset m
-select * from employee limit 1;
-select * from employee limit 2,4;
-select * from employee limit 4 offset 2;
+select * from employee1 limit 1;
+select * from employee1 limit 2,4;
+select * from employee1 limit 4 offset 2;
 
 # 查表关键字执行的顺序
 # select5 字段5 from 表1
@@ -250,13 +250,13 @@ age int,
 dep_id int
 );
 
-insert into department values
+insert into department1 values
 (200,'技术'),
 (201,'人力资源'),
 (202,'销售'),
 (203,'运营');
 
-insert into employee(name,sex,age,dep_id) values
+insert into employee1(name,sex,age,dep_id)values
 ('egon','male',18,200),
 ('alex','female',48,201),
 ('wupeiqi','male',38,201),
@@ -265,10 +265,11 @@ insert into employee(name,sex,age,dep_id) values
 ('jingliyang','female',18,204);
 
 use join_search;
-select * from department,employee where department.id=employee.dep_id;
+select *from department1,
+             employee1 where department.id=employee.dep_id;
 # 内连接 inner join ... on ...
 # select 列 from 表1 inner join 表2 on 条件
-select * from department as t1 inner join employee as t2 on t1.id=t2.dep_id;
+select * from department1 as t1 inner join employee1 as t2 on t1.id=t2.dep_id;
 
 # 外连接
   # 左外连接:以左边的表为主，右边表没有关联的数据也会显示出来
@@ -277,29 +278,29 @@ select * from department as t1 inner join employee as t2 on t1.id=t2.dep_id;
     # right join ... on ...
   # 全外连接 mysql不支持，full join ... on ...
 
-select * from department as t1 left join employee as t2 on t1.id=t2.dep_id;
+select * from department1 as t1 left join employee1 as t2 on t1.id=t2.dep_id;
 
-select * from department as t1 right join employee as t2 on t1.id=t2.dep_id;
+select * from department1 as t1 right join employee1 as t2 on t1.id=t2.dep_id;
 
-select department.name,employee.name from department inner join employee on department.id=200 and department.id=employee.dep_id;
+select department.name,employee.name from department1 inner join employee1 on department.id=200 and department.id=employee.dep_id;
 
 # 找人力资源大于40岁的人
-select department.name,employee.name,employee.age from department inner join join_search.employee on department.id=201 and employee.age>40;
+select department.name,employee.name,employee.age from department1 inner join join_search.employee on department.id=201 and employee.age>40;
 
 # 找各部门年龄大于25岁的人
-select department.name as bumen,employee.age as age,employee.name as name from department inner join employee on department.id=employee.dep_id and age>25 order by employee.age;
+select department.name as bumen,employee.age as age,employee.name as name from department1 inner join employee1 on department.id=employee.dep_id and age>25 order by employee.age;
 
 # 求每个部门多少人
-select department.name,count(employee.id) as count from department left join employee on department.id=employee.dep_id group by department.name order by count asc;
+select department.name,count(employee.id) as count from department1 left join employee1 on department.id=employee.dep_id group by department.name order by count asc;
 
 # 子查询 in
 # 查询平均年龄是25岁以上的部门名
-select dep_id from employee group by dep_id having avg(age)>25;   # 单表查询平均年龄大于25的部门id
-select name from department where id in(201,202);  # 单表查询部门id对应的部门名称
+select dep_id from employee1 group by dep_id having avg(age)>25;   # 单表查询平均年龄大于25的部门id
+select name from department1 where id in(201,202);  # 单表查询部门id对应的部门名称
 # 嵌套进去就是子查询
-select name from department where id in(select dep_id from employee group by dep_id having avg(age)>25);
+select name from department1 where id in(select dep_id from employee1 group by dep_id having avg(age)>25);
 
-select name from join_search.employee where dep_id create user 'guest'@'192.168.0.%' identified by '123';
+# select name from join_search.employee where dep_id create user 'guest'@'192.168.0.%' identified by '123';
 grant all on databasename.tablename to 'guest'@'192.168.0.%';   # 给用户授权
 # grant select,insert,update,delete,alter;
 grant all on *.* to 'eva'@'%' identified by '123';  # 创建账号并授权
@@ -457,7 +458,7 @@ office int, #一个部门一个屋子
 depart_id int
 );
 
-insert into employee(emp_name,sex,age,hire_date,post,salary,office,depart_id) values
+insert into employee1(emp_name,sex,age,hire_date,post,salary,office,depart_id)values
 ('egon','male',18,'20170301','老男孩驻沙河办事处外交大使',7300.33,401,1), #以下是教学部
 ('alex','male',78,'20150302','teacher',1000000.31,401,1),
 ('wupeiqi','male',81,'20130305','teacher',8300,401,1),
@@ -480,15 +481,15 @@ insert into employee(emp_name,sex,age,hire_date,post,salary,office,depart_id) va
 ('程咬铁','female',18,'20140512','operation',17000,403,3);
 
 # select 单表查询
-select * from employee;
+select * from employee1;
 # 重命名字段
-select emp_name as name from employee;
+select emp_name as name from employee1;
 # 去重
-select distinct sex, age from employee;
+select distinct sex, age from employee1;
 # 四则运算
-select emp_name,salary*12 as year_salary from employee;
+select emp_name,salary*12 as year_salary from employee1;
 # 拼接函数
-select concat(id, emp_name) from employee;   # 实际情况可能会把姓和名拼接在一起
+select concat(id, emp_name) from employee1;   # 实际情况可能会把姓和名拼接在一起
 
 
 # where 字句
@@ -502,30 +503,30 @@ select concat(id, emp_name) from employee;   # 实际情况可能会把姓和名
 # select后面筛选的是列，where后面筛选的是行
 
 
-select * from employee where emp_name like '程%';
-select * from employee where emp_name regexp '^j';
-select * from employee where hire_date regexp '^20[0-2]';
+select * from employee1 where emp_name like '程%';
+select * from employee1 where emp_name regexp '^j';
+select * from employee1 where hire_date regexp '^20[0-2]';
 
 
 # 分组 group by   聚合函数 count max min avga(平均值) sum
-select sex,count(sex) from employee group by sex;   # 统计男女员工的人数
-select post, GROUP_CONCAT(emp_name) from employee group by post;  # 会把职业相同的人名字聚合在一起显示
-select post, count(post) from employee group by post;
-select post, avg(salary) from employee group by post;
+select sex,count(sex) from employee1 group by sex;   # 统计男女员工的人数
+select post, GROUP_CONCAT(emp_name) from employee1 group by post;  # 会把职业相同的人名字聚合在一起显示
+select post, count(post) from employee1 group by post;
+select post, avg(salary) from employee1 group by post;
 
 
 # 过滤语句  having 在having条件中可以使用聚合函数，在where中不行
 # 适合去筛选符合条件的某一组数据，而不是某一行数据
 # 先分组再过滤：求平均值大于xx的部门，求人数大于xx的性别
-select post, count(id) from employee group by post having count(id)>3;
+select post, count(id) from employee1 group by post having count(id)>3;
 
 # 排序 order by （desc）降序排    asc 升序排
-select * from employee order by age,salary desc;   # 按年龄从小到大排,年龄相同的按工资从大到小排
+select * from employee1 order by age,salary desc;   # 按年龄从小到大排,年龄相同的按工资从大到小排
 
 # limit m,n 从m+1项取n项，不写m默认从0开始，等同于limit n offset m
-select * from employee limit 1;
-select * from employee limit 2,4;
-select * from employee limit 4 offset 2;
+select * from employee1 limit 1;
+select * from employee1 limit 2,4;
+select * from employee1 limit 4 offset 2;
 
 # 查表关键字执行的顺序
 # select5 字段5 from 表1
@@ -551,13 +552,13 @@ age int,
 dep_id int
 );
 
-insert into department values
+insert into department1 values
 (200,'技术'),
 (201,'人力资源'),
 (202,'销售'),
 (203,'运营');
 
-insert into employee(name,sex,age,dep_id) values
+insert into employee1(name,sex,age,dep_id)values
 ('egon','male',18,200),
 ('alex','female',48,201),
 ('wupeiqi','male',38,201),
@@ -566,10 +567,11 @@ insert into employee(name,sex,age,dep_id) values
 ('jingliyang','female',18,204);
 
 use join_search;
-select * from department,employee where department.id=employee.dep_id;
+select *from department1,
+             employee1 where department.id=employee.dep_id;
 # 内连接 inner join ... on ...
 # select 列 from 表1 inner join 表2 on 条件
-select * from department as t1 inner join employee as t2 on t1.id=t2.dep_id;
+select * from department1 as t1 inner join employee1 as t2 on t1.id=t2.dep_id;
 
 # 外连接
   # 左外连接:以左边的表为主，右边表没有关联的数据也会显示出来
@@ -578,42 +580,134 @@ select * from department as t1 inner join employee as t2 on t1.id=t2.dep_id;
     # right join ... on ...
   # 全外连接 mysql不支持，full join ... on ...
 
-select * from department as t1 left join employee as t2 on t1.id=t2.dep_id;
+select * from department1 as t1 left join employee1 as t2 on t1.id=t2.dep_id;
 
-select * from department as t1 right join employee as t2 on t1.id=t2.dep_id;
+select * from department1 as t1 right join employee1 as t2 on t1.id=t2.dep_id;
 
-select department.name,employee.name from department inner join employee on department.id=200 and department.id=employee.dep_id;
+select department.name,employee.name from department1 inner join employee1 on department.id=200 and department.id=employee.dep_id;
 
 # 找人力资源大于40岁的人
-select department.name,employee.name,employee.age from department inner join join_search.employee on department.id=201 and employee.age>40;
+select department.name,employee.name,employee.age from department1 inner join join_search.employee on department.id=201 and employee.age>40;
 
 # 找各部门年龄大于25岁的人
-select department.name as bumen,employee.age as age,employee.name as name from department inner join employee on department.id=employee.dep_id and age>25 order by employee.age;
+select department.name as bumen,employee.age as age,employee.name as name from department1 inner join employee1 on department.id=employee.dep_id and age>25 order by employee.age;
 
 # 求每个部门多少人
-select department.name,count(employee.id) as count from department left join employee on department.id=employee.dep_id group by department.name order by count asc;
+select department.name,count(employee.id) as count from department1 left join employee1 on department.id=employee.dep_id group by department.name order by count asc;
 
 # 子查询 in
 # 查询平均年龄是25岁以上的部门名
-select dep_id from employee group by dep_id having avg(age)>25;   # 单表查询平均年龄大于25的部门id
-select name from department where id in(201,202);  # 单表查询部门id对应的部门名称
+select dep_id from employee1 group by dep_id having avg(age)>25;   # 单表查询平均年龄大于25的部门id
+select name from department1 where id in(201,202);  # 单表查询部门id对应的部门名称
 # 嵌套进去就是子查询
-select name from department where id in(select dep_id from employee group by dep_id having avg(age)>25);
+select name from department1 where id in(select dep_id from employee1 group by dep_id having avg(age)>25);
 
 # 查询技术部门的员工名
-select name from employee where dep_id in (select id from department where name='技术');
+select name from employee1 where dep_id in (select id from department1 where name='技术');
 
 # 查询不足一人的部门名
-select distinct dep_id from employee;
-select * from join_search.department where id not in(select distinct dep_id from employee);
+select distinct dep_id from employee1;
+select * from department where id not in(select distinct dep_id from employee1);
 
 # 求大于所有人平均年龄的员工名和年龄
-select avg(age) from employee;
-select name, age from join_search.employee having age>(select avg(age) from employee);
+select avg(age) from employee1;
+select name, age from employee having age>(select avg(age) from employee1);
 
 # 找出部门大于部门平均年龄的人
-select avg(age),dep_id from employee group by dep_id;
+select avg(age),dep_id from employee1 group by dep_id;
 select t1.name, t1.age,t1.dep_id,age1 from employee as t1 inner join (select avg(age) as age1,dep_id from employee group by dep_id) as t2 on t1.dep_id=t2.dep_id where t1.age>t2.age1;
+
+# exists 当exists中的语句返回TRUE时，就执行外层语句
+select * from employee where exists(select id from join_search.department where id=203);
+
+
+# 多表查询可以用连表和子查询时，用连表查询，效率高，sql优化也往这个方向考虑
+use test;
+select * from employee1;
+select t1.post,t1.emp_name,t1.hire_date from employee1 as t1 inner join (select post,max(hire_date) hire from employee1 group by post) as t2 on t1.post=t2.post where t1.hire_date=t2.hire;
+use homework;
+show tables;
+
+
+# 索引的概念：索引在MySQL中也叫是一种“键”，是存储引擎用于快速找到记录的一种数据结构，提高磁盘io效率
+# 索引的数据结构是一种树状图，有根节点，父节点，叶子节点，树的深度（高度），
+# 每次查找数据时把磁盘IO次数控制在一个很小的数量级，最好是常数数量级。就这样，b+树应运而生
+# （B+树是通过二叉查找树，再由平衡二叉树，B树演化而来），b+树的高度一般在2~4层
+# 数据库中的B+树索引可以分为聚集索引（clustered index）和辅助索引（secondary index），
+# 聚集索引与辅助索引相同的是：不管是聚集索引还是辅助索引，其内部都是B+树的形式，即高度是平衡的，叶子结点存放着所有的数据。
+# 聚集索引与辅助索引不同的是：叶子结点存放的是否是一整行的信息
+# innodb使用的就是聚集索引，其实就是主键，即使不创建主键，MySQL取第一个唯一索引（unique）而且只含非空列（NOT NULL）作为主键（隐藏）
+# myasim使用的是非聚集索引
+##方法一：创建表时
+#   　　CREATE TABLE 表名 (
+#               字段名1  数据类型 [完整性约束条件…],
+#               字段名2  数据类型 [完整性约束条件…],
+#               [UNIQUE | FULLTEXT | SPATIAL ]   INDEX | KEY
+#               [索引名]  (字段名[(长度)]  [ASC |DESC])
+#               );
+# #方法二：CREATE在已存在的表上创建索引
+#       CREATE  [UNIQUE | FULLTEXT | SPATIAL ]  INDEX  索引名
+#                    ON 表名 (字段名[(长度)]  [ASC |DESC]) ;
+#
+# #方法三：ALTER TABLE在已存在的表上创建索引
+#       ALTER TABLE 表名 ADD  [UNIQUE | FULLTEXT | SPATIAL ] INDEX
+#                            索引名 (字段名[(长度)]  [ASC |DESC]) ;
+#
+# #删除索引：DROP INDEX 索引名 ON 表名字;
+
+create table s1(
+id int,
+name varchar(20),
+gender char(6),
+email varchar(50)
+);
+# 2. 创建存储过程，实现批量插入记录
+#声明存储过程的结束符号为$$
+delimiter $$
+create procedure auto_insert1()
+BEGIN
+    declare i int default 1;
+    while(i<3000000)do
+        insert into s1 values(i,'luhu','male',concat('luhu',i,'@qq'));
+        set i=i+1;
+    end while;
+END$$
+delimiter ;
+show create procedure auto_insert1;
+
+#4. 调用存储过程
+call auto_insert1();
+#重新声明分号为结束符号
+create index a on s1(id);
+select * from s1 where id=933333;
+
+
+create table login(username char(12) unique,password char(16) unique);
+insert into login values('luhu','123456'),('wang','12345');
+
+
+# 事务和锁
+begin; # 开启事务
+select * from login where username='luhu' for update ;  # 查询id值，for update添加行锁
+update login set password='12345678' where username='luhu'; # 完成更新
+commit;  # 提交事务，归还锁
+
+#语法：
+# mysqldump -h 服务器 -u用户名 -p密码 数据库名 > 备份文件.sql
+
+#示例：
+#单库备份
+# mysqldump -uroot -p123 db1 > db1.sql
+# mysqldump -uroot -p123 db1 table1 table2 > db1-table1-table2.sql
+#
+# #多库备份
+# mysqldump -uroot -p123 --databases db1 db2 mysql db3 > db1_db2_mysql_db3.sql
+#
+# #备份所有库
+# mysqldump -uroot -p123 --all-databases > all.sql
+
+
+
 
 
 

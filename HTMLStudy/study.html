@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--head标签都放在头部分之间。这里面包含了：<title>、<meta>、<link>，<style>-->
+    <!--<title>：指定整个网页的标题，在浏览器最上方显示。-->
+    <!--<meta>：提供有关页面的基本信息-->
+    <!--<link>：定义文档与外部资源的关系。-->
+    <!--<style>:定义内部样式表与网页的关系-->
+    <!--<meta charset="UTF-8" http-equiv="refresh" content="2;URL=http://www.baidu.com">-->
+    <!--meta配置信息，两秒之后请求后面的url，不传就刷新当前页面-->
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="study.css">   <!--引入css样式-->
+    <script src="study.js"></script>
+    <title>html学习</title>
+    <!--<style>-->
+        <!--div{-->
+            <!--background-color: burlywood;-->
+            <!--width: 120px;-->
+            <!--height: 15px;-->
+        <!--}-->
+    <!--</style>-->
+</head>
+<body>
+<h1>HTML study</h1>
+<h2>HTML study</h2>
+<h3>HTML study</h3>
+<h4>HTML study</h4>
+<h5>HTML study</h5>
+<b>加粗</b>
+<i>斜体</i>
+<u>下划线</u><br><s>删除</s>
+<!--br换行-->
+<button>按钮</button>
+<div>没有效果，独占一行</div>
+<img src="111597496573_.pic_hd.jpg" alt="李宗伟" title="李宗伟" width="140" height="210"><span>haha</span>  <!alt图片加载不出提示文案-->
+<a href="111597496573_.pic_hd.jpg" target="_blank">超链接标签</a><a>是内敛标签</a><!--blank，在新标签页打开，self当前窗口打开超链接-->
+<ul type="disc"><!--无须列表，小黑点可通过属性none控制disc，circle-->
+  <li>第一项</li>
+  <li>第二项</li>
+</ul>
+<ol type="1" start="2">  <!--type属性： start是从数字几开始 1 数字列表，默认值 A 大写字母 a 小写字母 Ⅰ大写罗马 ⅰ小写罗马-->
+  <li>第一项</li>
+  <li>第二项</li>
+</ol>
+<dl>   <!--标题列表（就像大纲一样，有一个层级效果）-->
+  <dt>标题1</dt>
+  <dd>内容1</dd>
+  <dt>标题2</dt>
+  <dd>内容1</dd>
+  <dd>内容2</dd>
+</dl>
+<!--div标签用来定义一个块级元素，并无实际的意义。主要通过CSS样式为其赋予不同的表现。-->
+<!--span标签用来定义内联(行内)元素，并无实际的意义。主要通过CSS样式为其赋予不同的表现。-->
+<!--标签分类：-->
+<!--内敛标签（行内标签）：不独占一行，内敛标签只能嵌套内敛标签 b/i/u/s/button/span/img-->
+<!--块级标签（行外标签）：自己独占一行,可以嵌套内敛标签和某些块级标签 h1-6/br/hr/div，但p标签不能嵌套块级标签-->
+
+<table border='1'>　<!--属性:border: 表格边框.  cellpadding: 内边距 （内边框和内容的距离） cellspacing: 外边距.（内外边框的距离）width: 像素 百分比.（最好通过css来设置长宽）
+rowspan: 单元格竖跨多少行  colspan: 单元格横跨多少列（即合并单元格）-->
+  <thead> <!--标题部分-->
+  <tr> <!--一行-->
+    <th>序号</th> <!--#一个单元格-->
+    <th>姓名</th>
+    <th>爱好</th>
+  </tr>
+  </thead>
+  <tbody> <!--内容部分-->
+  <tr> <!--一行-->
+    <td>1</td> <!--一个单元格-->
+    <td>Egon</td>
+    <td>杠娘</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>Yuan</td>
+    <td>日天</td>
+  </tr>
+  </tbody>
+</table>
+<input type="text">
+<!--
+input 元素：
+type属性值	表现形式	对应代码
+text	单行输入文本	<input type=text" />
+password	密码输入框（不显示明文）	<input type="password"  />
+date	日期输入框	<input type="date" />
+checkbox	复选框	<input type="checkbox" checked="checked" name='x' />
+radio	单选框	<input type="radio" name='x' />
+submit	提交按钮	<input type="submit" value="提交" /> #发送浏览器上输入标签中的内容，配合form表单使用，页面会刷新
+reset	重置按钮	<input type="reset" value="重置"  />  #页面不会刷新，将所有输入的内容清空
+button	普通按钮	<input type="button" value="普通按钮"  />
+hidden	隐藏输入框	<input type="hidden"  />
+file	文本选择框	<input type="file"  />
+属性说明:
+name：表单提交时的“键”，注意和id的区别，键相同时，radio两种只能选一个
+value：表单提交时对应项的值
+type="button", "reset", "submit"时，为按钮上显示的文本年内容
+type="text","password","hidden"时，为输入框的初始值
+type="checkbox", "radio", "file"，为输入相关联的值
+checked：radio和checkbox默认被选中的项
+readonly：text和password设置只读
+disabled：所有input均适用
+-->
+<input type="radio" name='键名' />男
+<input type="radio" name='键名' />女<br><br>
+<!--特殊字符,常用：
+空格 &nbsp;
+>   &gt;
+<	&lt;
+&	&amp;
+¥	&yen;
+版权标识（写公司网站的时候会用到）	&copy;
+注册（一个圆圈里面有个R）	&reg;
+ -->
+<form action="http://127.0.0.1:9002">
+    <label for="username">用户名</label>
+    <!--#for和input的id属性一样，就关联在一起了
+    定义：<label> 标签为 input 元素定义标注（标记）。如果不用这个label给input标签一个标记，
+    input会变黄，不影响使用，只是提示你，别忘了给用户一些提示，也就是这个label标签。
+　　说明：
+　　label 元素不会向用户呈现任何特殊效果。但是点击label标签里面的文本，那么和他关联的input标签就获得了光标，让你输入内容
+　　<label> 标签的 for 属性值应当与相关元素的 id 属性值相同。
+    -->
+    <input id="username" type="text" name="username">
+    <p>密码：<input type="password" name="password"></p>
+    <input type="radio" name="sex" value="male" checked="checked">男
+    <input type="radio" name="sex" value="female">女
+    <input type="checkbox" name="hobby" value="chouyan">抽烟
+    <input type="checkbox" name="hobby" value="tangtou">烫头<br>
+    <select name="city">
+        <option value="bj">北京</option>
+        <option value="sh" selected="selected">上海</option>
+        <option value="gz">广州</option>
+<!--
+select标签，下拉框，多和option标签连用，属性说明：
+multiple：布尔属性，设置后为多选下拉框，否则默认单选
+disabled：禁用
+selected：默认选中该项
+value：定义提交时的选项值
+-->
+    </select>
+    <br><input type="submit">
+    <!--
+form表单：
+属性	            描述
+accept-charset	规定在被提交表单中使用的字符集（默认：页面字符集）。
+action	规定向何处提交表单的地址（URL）（提交页面）。
+autocomplete	规定浏览器应该自动完成表单（默认：开启）。
+enctype	规定被提交数据的编码（默认：url-encoded）。
+method	规定在提交表单时所用的 HTTP 方法（默认：GET）。
+name	规定识别表单的名称（对于 DOM 使用：document.forms.name）。
+novalidate	规定浏览器不验证表单。
+target	规定 action 属性中地址的目标（默认：_self）。
+-->
+</form>
+<textarea name="memo" id="memo" cols="30" rows="10">
+  默认内容
+</textarea>
+<!--
+textarea多行文本属性说明：
+name：名称
+rows：行数  #相当于文本框高度设置
+cols：列数   #相当于文本框长度设置
+disabled：禁用
+maxlength：显示字符数，例如：maxlength='10'  最多输入十个字符
+-->
+<p>段落标签</p>
+<!--#独占一个段落-->
+
+<!--组合选择器-->
+<div>
+    <a href="">京东</a>
+    <p><a href="">淘宝</a></p>
+</div>
+    <a href="">小米</a>
+    <a href="">华为</a>
+<div title="test">属性选择器</div>
+
+<div id="p1" class="parent">
+    <div id='c1' class="child">春眠不觉晓，处处闻啼鸟</div>
+</div>
+
+<button class='btn' onclick="change(this);">变</button>     <!--这里this为实参，谁调用this就指向谁，js中为形参-->
+<input type="text" id="i1">
+<input type="button" value="开始" id="start" onclick="start();">
+<input type="button" value="结束" id="end" onclick="end();">
+</body>
+</html>
